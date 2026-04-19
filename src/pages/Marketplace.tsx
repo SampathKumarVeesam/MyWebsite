@@ -1081,14 +1081,11 @@ import {
   X,
   ChevronDown,
   ShoppingCart,
-  Bell,
-  User,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 // Product Card Component
 function ProductCard({
@@ -1416,7 +1413,7 @@ function ResellerCard({ onShare }: { onShare: () => void }) {
 
 // Vendor Dashboard
 function VendorDashboard() {
-  const [activeTab, setActiveTab] = useState('products');
+  const [, setActiveTab] = useState('products');
   const navigate = useNavigate();
   
   const stats = [
@@ -1653,7 +1650,6 @@ export default function Marketplace() {
   const [cart, setCart] = useState<any[]>([]);
   const [showCartNotification, setShowCartNotification] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   const categories = ['All', 'Electronics', 'Fashion', 'Home', 'Beauty', 'Sports', 'Books'];
 
