@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import MomentumRing from '@/components/MomentumRing';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -305,6 +306,8 @@ export function MainLayout({ children }: MainLayoutProps) {
           </div>
         </div>
       </footer>
+      {/* Momentum Ring — Virtuous Cycle indicator */}
+      <MomentumRing />
     </div>
   );
 }

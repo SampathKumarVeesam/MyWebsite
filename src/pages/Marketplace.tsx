@@ -1074,6 +1074,8 @@ import {
   Store,
   Package,
   Plus,
+  Minus,
+  Trash2,
   Star,
   BadgeCheck,
   Percent,
@@ -1081,11 +1083,214 @@ import {
   X,
   ChevronDown,
   ShoppingCart,
+  CheckCircle2,
+  ArrowRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
-import { useNavigate } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLoop } from '@/contexts/LoopContext';
+
+// ─── Cart Item Type ──────────────────────────────────────────────────────────
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  seller: string;
+  cashback?: number;
+  qty: number;
+}
+
+// ─── Cart Drawer Component ───────────────────────────────────────────────────
+function CartDrawer({
+  items,
+  onClose,
+  onQtyChange,
+  onRemove,
+  onCheckout,
+  userCoins,
+  checkoutDone,
+}: {
+  items: CartItem[];
+  onClose: () => void;
+  onQtyChange: (id: string, delta: number) => void;
+  onRemove: (id: string) => void;
+  onCheckout: () => void;
+  userCoins: number;
+  checkoutDone: boolean;
+}) {
+  const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+  const totalCashback = items.reduce((s, i) => s + Math.round(i.price * i.qty * ((i.cashback ?? 0) / 100)), 0);
+  const canAfford = userCoins >= subtotal;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[400] flex"
+      onClick={onClose}
+    >
+      {/* Backdrop */}
+      <div className="flex-1 bg-black/60 backdrop-blur-sm" />
+
+      {/* Drawer */}
+      <motion.div
+        initial={{ x: '100%' }}
+        animate={{ x: 0 }}
+        exit={{ x: '100%' }}
+        transition={{ type: 'spring', damping: 28, stiffness: 260 }}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md flex flex-col"
+        style={{ background: 'rgba(10,14,23,0.98)', borderLeft: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(24px)' }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <ShoppingCart size={22} className="text-pink-400" />
+            <h2 className="font-bold text-xl">Your Cart</h2>
+            {items.length > 0 && (
+              <Badge className="bg-pink-500/20 text-pink-400 border-pink-500/30">
+                {items.reduce((s, i) => s + i.qty, 0)} items
+              </Badge>
+            )}
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+          {checkoutDone ? (
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="flex flex-col items-center justify-center h-64 gap-4"
+            >
+              <div className="w-20 h-20 rounded-full flex items-center justify-center"
+                style={{ background: 'rgba(34,197,94,0.2)', border: '2px solid rgba(34,197,94,0.5)' }}>
+                <CheckCircle2 size={40} className="text-green-400" />
+              </div>
+              <h3 className="font-bold text-xl text-green-400">Order Placed!</h3>
+              <p className="text-white/60 text-sm text-center">Your order is being processed.<br />Estimated delivery: 3-5 days.</p>
+            </motion.div>
+          ) : items.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-64 gap-4 text-white/40">
+              <ShoppingCart size={56} strokeWidth={1} />
+              <p className="text-lg">Your cart is empty</p>
+              <p className="text-sm text-center">Add products to get started!</p>
+            </div>
+          ) : (
+            items.map((item) => (
+              <motion.div
+                key={item.id}
+                layout
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="flex gap-4 p-4 rounded-xl"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+              >
+                {/* Product icon */}
+                <div className="w-14 h-14 rounded-lg flex items-center justify-center shrink-0"
+                  style={{ background: 'rgba(236,72,153,0.15)' }}>
+                  <Package size={24} className="text-pink-400" />
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm leading-tight line-clamp-2 mb-1">{item.name}</p>
+                  <p className="text-xs text-white/40 mb-2">by {item.seller}</p>
+                  {item.cashback && (
+                    <span className="text-xs text-green-400">{item.cashback}% cashback</span>
+                  )}
+                </div>
+
+                <div className="flex flex-col items-end gap-2 shrink-0">
+                  {/* Price */}
+                  <span className="font-bold text-sm">{(item.price * item.qty).toLocaleString()} <span className="text-white/40 font-normal text-xs">coins</span></span>
+
+                  {/* Qty controls */}
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => onQtyChange(item.id, -1)}
+                      className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-white/10"
+                      style={{ border: '1px solid rgba(255,255,255,0.1)' }}
+                    >
+                      <Minus size={12} />
+                    </button>
+                    <span className="w-7 text-center text-sm font-bold">{item.qty}</span>
+                    <button
+                      onClick={() => onQtyChange(item.id, 1)}
+                      className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-white/10"
+                      style={{ border: '1px solid rgba(255,255,255,0.1)' }}
+                    >
+                      <Plus size={12} />
+                    </button>
+                    <button
+                      onClick={() => onRemove(item.id)}
+                      className="w-7 h-7 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-500/10 transition-colors ml-1"
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))
+          )}
+        </div>
+
+        {/* Footer */}
+        {!checkoutDone && items.length > 0 && (
+          <div className="px-6 py-5 border-t border-white/10 space-y-4">
+            {/* Summary */}
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between text-white/60">
+                <span>Subtotal ({items.reduce((s, i) => s + i.qty, 0)} items)</span>
+                <span>{subtotal.toLocaleString()} coins</span>
+              </div>
+              <div className="flex justify-between text-green-400">
+                <span>Cashback earned</span>
+                <span>+{totalCashback.toLocaleString()} coins</span>
+              </div>
+              <div className="flex justify-between font-bold text-base border-t border-white/10 pt-2 mt-2">
+                <span>Total</span>
+                <span>{subtotal.toLocaleString()} coins</span>
+              </div>
+            </div>
+
+            {/* Balance check */}
+            <div className={`text-xs px-3 py-2 rounded-lg flex items-center justify-between ${
+              canAfford ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
+            }`}>
+              <span>Your balance: {userCoins.toLocaleString()} coins</span>
+              {canAfford
+                ? <span>✓ Sufficient</span>
+                : <span>Insufficient balance</span>
+              }
+            </div>
+
+            {/* Checkout button */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={onCheckout}
+              disabled={!canAfford}
+              className="w-full py-3.5 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ background: 'linear-gradient(135deg, #ec4899, #a855f7)', boxShadow: canAfford ? '0 0 20px rgba(236,72,153,0.3)' : 'none' }}
+            >
+              <ShoppingCart size={18} />
+              Checkout — Pay {subtotal.toLocaleString()} coins
+              <ArrowRight size={16} />
+            </motion.button>
+          </div>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}
 
 // Product Card Component
 function ProductCard({
@@ -1642,14 +1847,22 @@ function FilterModal({ isOpen, onClose, onApply }: { isOpen: boolean; onClose: (
 }
 
 export default function Marketplace() {
+  const { user, updateUser } = useAuth();
+  const { recordAction, consumeBridge, getPendingBridge, getCashback } = useLoop();
   const [searchQuery, setSearchQuery] = useState('');
   const [isVendorView, setIsVendorView] = useState(false);
   const [activeCategory, setActiveCategory] = useState('All');
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [likedProducts, setLikedProducts] = useState<Set<string>>(new Set());
-  const [cart, setCart] = useState<any[]>([]);
-  const [showCartNotification, setShowCartNotification] = useState(false);
-  const navigate = useNavigate();
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [checkoutDone, setCheckoutDone] = useState(false);
+  const [rewardToast, setRewardToast] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setRewardToast(msg);
+    setTimeout(() => setRewardToast(null), 3500);
+  };
 
   const categories = ['All', 'Electronics', 'Fashion', 'Home', 'Beauty', 'Sports', 'Books'];
 
@@ -1727,9 +1940,58 @@ export default function Marketplace() {
   ];
 
   const handleBuy = (product: any) => {
-    setCart(prev => [...prev, product]);
-    setShowCartNotification(true);
-    setTimeout(() => setShowCartNotification(false), 2000);
+    // Add to cart (increment qty if already exists)
+    setCart(prev => {
+      const existing = prev.find(i => i.id === product.id);
+      if (existing) {
+        return prev.map(i => i.id === product.id ? { ...i, qty: i.qty + 1 } : i);
+      }
+      return [...prev, { ...product, qty: 1 }];
+    });
+    setCheckoutDone(false);
+    setIsCartOpen(true);
+    // Loop engine rewards
+    const bridge = consumeBridge('marketplace');
+    const cashback = getCashback('marketplace');
+    const baseAC = Math.round(product.price * cashback);
+    const result = recordAction('marketplace', 'buy_complete', baseAC);
+    if (user) updateUser({ coins: user.coins + result.acEarned });
+    const msgs = [`🛒 +${result.acEarned} AC cashback (${(cashback * 100).toFixed(0)}%)`];
+    if (bridge) msgs[0] = `🎁 ${bridge.token} applied! ${msgs[0]}`;
+    if (result.bridgeCreated) msgs.push(`🎁 ${result.bridgeCreated.token} unlocked → Learn`);
+    showToast(msgs[0]);
+  };
+
+  const handleQtyChange = (id: string, delta: number) => {
+    setCart(prev => {
+      const item = prev.find(i => i.id === id);
+      if (!item) return prev;
+      const newQty = item.qty + delta;
+      if (newQty <= 0) return prev.filter(i => i.id !== id);
+      return prev.map(i => i.id === id ? { ...i, qty: newQty } : i);
+    });
+  };
+
+  const handleRemoveFromCart = (id: string) => {
+    setCart(prev => prev.filter(i => i.id !== id));
+  };
+
+  const handleCheckout = () => {
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    if (!user || user.coins < subtotal) return;
+    updateUser({ coins: user.coins - subtotal });
+    // Record purchase in loop engine
+    cart.forEach(item => {
+      recordAction('marketplace', 'buy_complete', item.price * item.qty);
+    });
+    setCheckoutDone(true);
+    showToast(`✅ Order placed! Spent ${subtotal.toLocaleString()} coins`);
+    // Clear cart after 3s
+    setTimeout(() => {
+      setCart([]);
+      setCheckoutDone(false);
+      setIsCartOpen(false);
+    }, 3000);
   };
 
   const handleLike = (id: string) => {
@@ -1774,6 +2036,42 @@ export default function Marketplace() {
 
   return (
     <div className="space-y-6 pb-20 relative min-h-screen">
+      {/* Cart Drawer */}
+      <AnimatePresence>
+        {isCartOpen && (
+          <CartDrawer
+            items={cart}
+            onClose={() => setIsCartOpen(false)}
+            onQtyChange={handleQtyChange}
+            onRemove={handleRemoveFromCart}
+            onCheckout={handleCheckout}
+            userCoins={user?.coins ?? 0}
+            checkoutDone={checkoutDone}
+          />
+        )}
+      </AnimatePresence>
+      {/* Reward Toast */}
+      <AnimatePresence>
+        {rewardToast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-[300] px-5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-2xl"
+            style={{ background: 'linear-gradient(135deg,#ec4899,#a855f7)', boxShadow: '0 0 30px rgba(236,72,153,0.5)' }}
+          >
+            {rewardToast}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* Bridge hint banner */}
+      {(() => { const b = getPendingBridge('marketplace'); return b ? (
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+          className="rounded-xl px-4 py-2.5 flex items-center gap-3 text-sm"
+          style={{ background: 'rgba(236,72,153,0.12)', border: '1px solid rgba(236,72,153,0.4)' }}>
+          <span className="text-xl">🎁</span>
+          <div><span className="font-bold text-pink-300">{b.token} Active: </span>
+            <span className="text-white/70">{b.description}</span></div>
+        </motion.div>
+      ) : null; })()}
       {/* Animated Background Pattern */}
       <div 
         className="fixed inset-0 pointer-events-none"
@@ -1813,20 +2111,6 @@ export default function Marketplace() {
         />
       </div>
 
-      {/* Cart Notification */}
-      <AnimatePresence>
-        {showCartNotification && (
-          <motion.div
-            initial={{ opacity: 0, y: -50, x: '-50%' }}
-            animate={{ opacity: 1, y: 0, x: '-50%' }}
-            exit={{ opacity: 0, y: -50, x: '-50%' }}
-            className="fixed top-20 left-1/2 z-50 glass-card px-6 py-3 bg-green-500/20 border-green-500/50 flex items-center gap-2"
-          >
-            <ShoppingCart size={18} className="text-green-400" />
-            <span>Added to cart!</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Header */}
       <motion.div
@@ -1862,13 +2146,18 @@ export default function Marketplace() {
               variant="outline" 
               size="icon"
               className="relative"
-              onClick={() => navigate('/cart')}
+              onClick={() => setIsCartOpen(true)}
             >
               <ShoppingCart size={18} />
               {cart.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-pink-500 rounded-full text-xs flex items-center justify-center">
-                  {cart.length}
-                </span>
+                <motion.span
+                  key={cart.reduce((s, i) => s + i.qty, 0)}
+                  initial={{ scale: 1.4 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-1 -right-1 w-5 h-5 bg-pink-500 rounded-full text-xs flex items-center justify-center font-bold"
+                >
+                  {cart.reduce((s, i) => s + i.qty, 0)}
+                </motion.span>
               )}
             </Button>
           </motion.div>

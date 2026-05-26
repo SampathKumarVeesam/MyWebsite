@@ -918,6 +918,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLoop } from '@/contexts/LoopContext';
 
 // Background images for food
 const BG_IMAGES = {
@@ -1106,7 +1109,27 @@ function DealCard({
 }
 
 export default function Food() {
+  const { user, updateUser } = useAuth();
+  const { recordAction, consumeBridge, getPendingBridge, getCashback } = useLoop();
   const [searchQuery, setSearchQuery] = useState('');
+  const [rewardToast, setRewardToast] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setRewardToast(msg);
+    setTimeout(() => setRewardToast(null), 3500);
+  };
+
+  const handleOrder = (restaurantName: string) => {
+    const bridge = consumeBridge('food');
+    const cashback = getCashback('food');
+    const baseAC = Math.round(300 * cashback); // ~300 coin avg order
+    const result = recordAction('food', 'order_complete', baseAC);
+    if (user) updateUser({ coins: user.coins + result.acEarned });
+    const msgs = [`🍜 Order placed at ${restaurantName}! +${result.acEarned} AC (${(cashback * 100).toFixed(0)}% cashback)`];
+    if (bridge) msgs[0] = `🎁 ${bridge.token}: ${msgs[0]}`;
+    if (result.bridgeCreated) msgs.push(`🎁 ${result.bridgeCreated.token} unlocked → Entertainment`);
+    showToast(msgs[0]);
+  };
 
   const categories = [
     {
@@ -1238,6 +1261,28 @@ export default function Food() {
 
   return (
     <div className="space-y-6 pb-20">
+      {/* Reward Toast */}
+      <AnimatePresence>
+        {rewardToast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-[300] px-5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-2xl"
+            style={{ background: 'linear-gradient(135deg,#22c55e,#15803d)', boxShadow: '0 0 30px rgba(34,197,94,0.5)' }}
+          >
+            {rewardToast}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* Brain Food bridge hint */}
+      {(() => { const b = getPendingBridge('food'); return b ? (
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+          className="rounded-xl px-4 py-2.5 flex items-center gap-3 text-sm"
+          style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.4)' }}>
+          <span className="text-xl">🎁</span>
+          <div><span className="font-bold text-green-300">{b.token} Active: </span>
+            <span className="text-white/70">{b.description}</span></div>
+        </motion.div>
+      ) : null; })()}
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -1300,6 +1345,8 @@ export default function Food() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
+                onClick={() => restaurant.isOpen && handleOrder(restaurant.name)}
+                className={restaurant.isOpen ? 'cursor-pointer' : 'cursor-not-allowed'}
               >
                 <RestaurantCard {...restaurant} />
               </motion.div>

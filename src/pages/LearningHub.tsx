@@ -622,6 +622,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLoop } from '@/contexts/LoopContext';
+import { AnimatePresence } from 'framer-motion';
 
 // Background images for learning hub
 const BG_IMAGES = {
@@ -941,8 +944,27 @@ function TeacherDashboard() {
 }
 
 export default function LearningHub() {
+  const { user, updateUser } = useAuth();
+  const { recordAction, consumeBridge, getPendingBridge } = useLoop();
   const [searchQuery, setSearchQuery] = useState('');
   const [isTeacherView, setIsTeacherView] = useState(false);
+  const [rewardToast, setRewardToast] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setRewardToast(msg);
+    setTimeout(() => setRewardToast(null), 3500);
+  };
+
+  const handleEnroll = (courseTitle: string, reward: number) => {
+    const bridge = consumeBridge('learning');
+    const result = recordAction('learning', 'enroll_complete', reward);
+    if (user) updateUser({ coins: user.coins + result.acEarned });
+    const msg = bridge
+      ? `🎁 ${bridge.token} applied! +${result.acEarned} AC for enrolling in ${courseTitle}`
+      : `📚 +${result.acEarned} AC for enrolling in ${courseTitle}`;
+    if (result.bridgeCreated) showToast(`${msg} | 🎁 ${result.bridgeCreated.token} unlocked → Food`);
+    else showToast(msg);
+  };
 
   const categories = ['All', 'Development', 'Design', 'Business', 'Marketing', 'Language'];
 
@@ -1047,6 +1069,28 @@ export default function LearningHub() {
 
   return (
     <div className="space-y-6 pb-20">
+      {/* Reward Toast */}
+      <AnimatePresence>
+        {rewardToast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-[300] px-5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-2xl"
+            style={{ background: 'linear-gradient(135deg,#38bdf8,#818cf8)', boxShadow: '0 0 30px rgba(56,189,248,0.5)' }}
+          >
+            {rewardToast}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* Bridge hint */}
+      {(() => { const b = getPendingBridge('learning'); return b ? (
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+          className="rounded-xl px-4 py-2.5 flex items-center gap-3 text-sm"
+          style={{ background: 'rgba(56,189,248,0.12)', border: '1px solid rgba(56,189,248,0.4)' }}>
+          <span className="text-xl">🎁</span>
+          <div><span className="font-bold text-cyan-300">{b.token} Active: </span>
+            <span className="text-white/70">{b.description}</span></div>
+        </motion.div>
+      ) : null; })()}
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}

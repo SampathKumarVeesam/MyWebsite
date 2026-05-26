@@ -995,6 +995,7 @@ import {
   Sparkles,
   CheckCircle2,
   Zap,
+  Clock,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -1060,9 +1061,13 @@ function WalletCard({
   );
 }
 
-// Daily Streak Component with Background
-function DailyStreak({ streak, onClaim }: { streak: number; onClaim: () => void }) {
-  const [claimed, setClaimed] = useState(false);
+// Daily Streak Component with Background — reads from AuthContext, NOT local state
+function DailyStreak() {
+  const { getStreakStatus, claimDailyStreak } = useAuth();
+  const [claimMessage, setClaimMessage] = useState<string | null>(null);
+  const [timeUntilReset, setTimeUntilReset] = useState('');
+  const [liveStatus, setLiveStatus] = useState(getStreakStatus());
+
   const rewards = [
     { day: 1, reward: 10, icon: Sparkles },
     { day: 2, reward: 20, icon: Zap },
@@ -1073,10 +1078,44 @@ function DailyStreak({ streak, onClaim }: { streak: number; onClaim: () => void 
     { day: 7, reward: 300, icon: Sparkles },
   ];
 
+  // Update countdown every second using the 24h cooldown from AuthContext
+  useEffect(() => {
+    function tick() {
+      const currentStatus = getStreakStatus();
+      setLiveStatus(currentStatus);
+
+      const ms = currentStatus.msUntilNextClaim;
+      if (ms <= 0) {
+        setTimeUntilReset('00:00:00');
+        // Clear claim message when cooldown expires so button reappears
+        if (!currentStatus.canClaim) return;
+        setClaimMessage(null);
+      } else {
+        const hours = Math.floor(ms / (1000 * 60 * 60));
+        const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+        setTimeUntilReset(
+          `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+        );
+      }
+    }
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [getStreakStatus]);
+
   const handleClaim = () => {
-    setClaimed(true);
-    onClaim();
+    const result = claimDailyStreak();
+    if (result.success) {
+      setClaimMessage(result.message);
+      // Immediately refresh status so UI shows the claimed state
+      setLiveStatus(getStreakStatus());
+    }
   };
+
+  // Use the streak day position in the 7-day cycle for the UI dots
+  const status = liveStatus;
+  const cyclePosition = status.currentStreak % 7;
 
   return (
     <motion.div
@@ -1098,11 +1137,13 @@ function DailyStreak({ streak, onClaim }: { streak: number; onClaim: () => void 
             </div>
             <div>
               <h3 className="font-bold text-lg">Daily Streak</h3>
-              <p className="text-white/50 text-sm">Keep it going!</p>
+              <p className="text-white/50 text-sm">
+                {status.currentStreak === 0 ? 'Start your streak today!' : 'Keep it going!'}
+              </p>
             </div>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-bold text-orange-400">{streak}</div>
+            <div className="text-3xl font-bold text-orange-400">{status.currentStreak}</div>
             <div className="text-white/50 text-sm">days</div>
           </div>
         </div>
@@ -1110,8 +1151,8 @@ function DailyStreak({ streak, onClaim }: { streak: number; onClaim: () => void 
         <div className="flex items-center justify-between mb-6 overflow-x-auto pb-2">
           {rewards.map((item, i) => {
             const Icon = item.icon;
-            const isCompleted = i < streak;
-            const isCurrent = i === streak;
+            const isCompleted = i < cyclePosition;
+            const isCurrent = i === cyclePosition;
             return (
               <div key={i} className="flex flex-col items-center min-w-[40px]">
                 <motion.div
@@ -1124,28 +1165,41 @@ function DailyStreak({ streak, onClaim }: { streak: number; onClaim: () => void 
                       : 'bg-white/5'
                   }`}
                 >
-                  <Icon size={16} className={isCompleted || isCurrent ? 'text-white' : 'text-white/30'} />
+                  {isCompleted ? (
+                    <CheckCircle2 size={16} className="text-white" />
+                  ) : (
+                    <Icon size={16} className={isCurrent ? 'text-white' : 'text-white/30'} />
+                  )}
                 </motion.div>
-                <span className={`text-xs ${isCompleted ? 'text-orange-400' : 'text-white/30'}`}>
+                <span className={`text-xs ${isCompleted ? 'text-orange-400' : isCurrent ? 'text-orange-300' : 'text-white/30'}`}>
                   +{item.reward}
+                </span>
+                <span className={`text-[10px] mt-0.5 ${isCompleted ? 'text-white/50' : 'text-white/20'}`}>
+                  Day {i + 1}
                 </span>
               </div>
             );
           })}
         </div>
 
-        {!claimed ? (
+        {status.canClaim ? (
           <Button
             onClick={handleClaim}
             className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg shadow-orange-500/25"
           >
             <Flame size={18} className="mr-2" />
-            Claim Daily Reward
+            Claim Daily Reward (+{status.nextReward} coins)
           </Button>
         ) : (
-          <div className="text-center py-3 rounded-lg bg-green-500/10 border border-green-500/30 text-green-400">
-            <CheckCircle2 size={18} className="inline mr-2" />
-            Reward Claimed!
+          <div className="space-y-2">
+            <div className="text-center py-3 rounded-lg bg-green-500/10 border border-green-500/30 text-green-400">
+              <CheckCircle2 size={18} className="inline mr-2" />
+              {claimMessage || 'Reward Claimed!'}
+            </div>
+            <div className="flex items-center justify-center gap-2 text-white/40 text-xs">
+              <Clock size={12} />
+              <span>Next reward available in {timeUntilReset}</span>
+            </div>
           </div>
         )}
       </div>
@@ -1322,7 +1376,7 @@ function QuickAction({
 }
 
 export default function Dashboard() {
-  const { user, updateUser } = useAuth();
+  const { user } = useAuth();
   const [totalWorth, setTotalWorth] = useState(0);
 
   useEffect(() => {
@@ -1330,16 +1384,6 @@ export default function Dashboard() {
       setTotalWorth(user.coins + user.vaultCoins);
     }
   }, [user]);
-
-  const handleClaimStreak = () => {
-    if (user) {
-      const reward = [10, 20, 30, 50, 100, 150, 300][user.streak % 7];
-      updateUser({
-        coins: user.coins + reward,
-        streak: user.streak + 1,
-      });
-    }
-  };
 
   const missions = [
     {
@@ -1435,7 +1479,7 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="space-y-6">
-          <DailyStreak streak={user?.streak || 0} onClaim={handleClaimStreak} />
+          <DailyStreak />
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

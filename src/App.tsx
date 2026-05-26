@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { LoopProvider } from './contexts/LoopContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { SmoothScroll } from './components/SmoothScroll';
 
@@ -19,9 +20,10 @@ import Wallet from './pages/Wallet';
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <SmoothScroll />
-        <Routes>
+      <LoopProvider>
+        <Router>
+          <SmoothScroll />
+          <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -42,7 +44,8 @@ function App() {
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </Router>
+        </Router>
+      </LoopProvider>
     </AuthProvider>
   );
 }

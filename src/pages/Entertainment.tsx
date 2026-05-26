@@ -787,6 +787,7 @@
 
 
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Play,
@@ -800,6 +801,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
+import { AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLoop } from '@/contexts/LoopContext';
 
 // Background images for entertainment
 const BG_IMAGES = {
@@ -1002,6 +1006,26 @@ function WatchPartyCard({
 }
 
 export default function Entertainment() {
+  const { user, updateUser } = useAuth();
+  const { recordAction, consumeBridge, getPendingBridge } = useLoop();
+  const [rewardToast, setRewardToast] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setRewardToast(msg);
+    setTimeout(() => setRewardToast(null), 3500);
+  };
+
+  const handleWatch = (title: string, reward: number, isFull = false) => {
+    const bridge = consumeBridge('entertainment');
+    const action = isFull ? 'watch_full_complete' : 'watch_short_complete';
+    const result = recordAction('entertainment', action, reward);
+    if (user) updateUser({ coins: user.coins + result.acEarned });
+    const msgs = [`🎬 Watched ${title}! +${result.acEarned} AC`];
+    if (bridge) msgs[0] = `🎁 ${bridge.token}: ${msgs[0]}`;
+    if (result.bridgeCreated) msgs.push(`🎁 ${result.bridgeCreated.token} unlocked → Games`);
+    if (result.boostActivated) msgs.push(result.boostActivated.label);
+    showToast(msgs[0]);
+  };
   const shorts = [
     { title: 'Quick React Tips #1', creator: 'CodeMaster', views: '125K', likes: '8.5K', duration: '0:45', reward: 5, bgImage: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=300&h=400&fit=crop' },
     { title: '5-Min Workout Routine', creator: 'FitLife', views: '89K', likes: '5.2K', duration: '5:00', reward: 10, bgImage: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300&h=400&fit=crop' },
@@ -1027,6 +1051,29 @@ export default function Entertainment() {
 
   return (
     <div className="space-y-6 pb-20">
+      {/* Reward Toast */}
+      <AnimatePresence>
+        {rewardToast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-[300] px-5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-2xl"
+            style={{ background: 'linear-gradient(135deg,#f87171,#a855f7)', boxShadow: '0 0 30px rgba(248,113,113,0.5)' }}
+          >
+            {rewardToast}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* Full Belly bridge hint */}
+      {(() => { const b = getPendingBridge('entertainment'); return b ? (
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+          className="rounded-xl px-4 py-2.5 flex items-center gap-3 text-sm"
+          style={{ background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.4)' }}>
+          <span className="text-xl">🎁</span>
+          <div><span className="font-bold text-red-300">{b.token} Active: </span>
+            <span className="text-white/70">{b.description}</span></div>
+        </motion.div>
+      ) : null; })()}
+
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -1100,6 +1147,8 @@ export default function Entertainment() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
+                onClick={() => handleWatch(short.title, short.reward)}
+                className="cursor-pointer"
               >
                 <ShortsCard {...short} />
               </motion.div>

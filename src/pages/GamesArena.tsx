@@ -1,1602 +1,499 @@
-// // import { useState } from 'react';
-// // import { motion } from 'framer-motion';
-// // import {
-// //   Gamepad2,
-// //   Users,
-// //   Trophy,
-// //   Zap,
-// //   Target,
-// //   Timer,
-// //   Sparkles,
-// //   Flame,
-// //   TrendingUp,
-// //   Play,
-// //   Lock,
-// //   Sword,
-// //   Crown,
-// // } from 'lucide-react';
-// // import { Link } from 'react-router-dom';
-// // import { useAuth } from '@/contexts/AuthContext';
-// // import { Button } from '@/components/ui/button';
-// // import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-// // import { Progress } from '@/components/ui/progress';
-// // import { Slider } from '@/components/ui/slider';
-
-// // function GameCard({
-// //   title,
-// //   category,
-// //   players,
-// //   reward,
-// //   difficulty,
-// //   isNew,
-// //   isLocked,
-// // }: {
-// //   title: string;
-// //   category: string;
-// //   players: string;
-// //   reward: number;
-// //   difficulty: 'Easy' | 'Medium' | 'Hard';
-// //   isNew?: boolean;
-// //   isLocked?: boolean;
-// // }) {
-// //   const difficultyColors = {
-// //     Easy: 'from-green-500 to-emerald-500',
-// //     Medium: 'from-yellow-500 to-orange-500',
-// //     Hard: 'from-red-500 to-pink-500',
-// //   };
-
-// //   return (
-// //     <motion.div
-// //       whileHover={!isLocked ? { scale: 1.03, y: -5 } : {}}
-// //       className={`glass-card overflow-hidden group ${isLocked ? 'opacity-60' : 'cursor-pointer'}`}
-// //     >
-// //       <div className="aspect-video relative overflow-hidden">
-// //         <div className={`absolute inset-0 bg-gradient-to-br ${difficultyColors[difficulty]} opacity-20 group-hover:opacity-30 transition-opacity`} />
-// //         <div className="absolute inset-0 flex items-center justify-center">
-// //           <Gamepad2 size={48} className="text-white/30 group-hover:text-white/50 transition-colors" />
-// //         </div>
-        
-// //         <div className="absolute top-3 left-3 flex gap-2">
-// //           {isNew && (
-// //             <span className="px-2 py-1 rounded-full bg-green-500/80 text-white text-xs font-medium">
-// //               NEW
-// //             </span>
-// //           )}
-// //           <span className={`px-2 py-1 rounded-full bg-gradient-to-r ${difficultyColors[difficulty]} text-white text-xs font-medium`}>
-// //             {difficulty}
-// //           </span>
-// //         </div>
-
-// //         {isLocked && (
-// //           <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-// //             <Lock size={32} className="text-white/60" />
-// //           </div>
-// //         )}
-
-// //         {!isLocked && (
-// //           <motion.div
-// //             initial={{ opacity: 0 }}
-// //             whileHover={{ opacity: 1 }}
-// //             className="absolute inset-0 bg-black/40 flex items-center justify-center"
-// //           >
-// //             <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-// //               <Play size={28} className="text-white ml-1" />
-// //             </div>
-// //           </motion.div>
-// //         )}
-// //       </div>
-
-// //       <div className="p-4">
-// //         <div className="flex items-start justify-between mb-2">
-// //           <div>
-// //             <h3 className="font-bold group-hover:text-blue-400 transition-colors">{title}</h3>
-// //             <p className="text-white/50 text-sm">{category}</p>
-// //           </div>
-// //         </div>
-// //         <div className="flex items-center justify-between">
-// //           <div className="flex items-center gap-3 text-sm text-white/50">
-// //             <span className="flex items-center gap-1">
-// //               <Users size={14} />
-// //               {players}
-// //             </span>
-// //           </div>
-// //           <div className="flex items-center gap-1 text-amber-400">
-// //             <Sparkles size={14} />
-// //             <span className="font-medium">+{reward}</span>
-// //           </div>
-// //         </div>
-// //       </div>
-// //     </motion.div>
-// //   );
-// // }
-
-// // function ChallengeCard() {
-// //   const [stake, setStake] = useState(50);
-// //   const pot = stake * 2;
-// //   const vaultSave = Math.floor(stake * 0.25);
-// //   const fee = Math.floor(stake * 0.005);
-// //   const winAmount = pot - vaultSave - fee;
-
-// //   return (
-// //     <motion.div
-// //       initial={{ opacity: 0, y: 20 }}
-// //       animate={{ opacity: 1, y: 0 }}
-// //       className="glass-card p-6"
-// //     >
-// //       <div className="flex items-center gap-4 mb-6">
-// //         <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center">
-// //           <Sword size={28} className="text-white" />
-// //         </div>
-// //         <div>
-// //           <h3 className="font-bold text-lg">Challenge a Friend</h3>
-// //           <p className="text-white/60 text-sm">Stake coins and compete head-to-head</p>
-// //         </div>
-// //       </div>
-
-// //       <div className="mb-6">
-// //         <div className="flex items-center justify-between mb-2">
-// //           <span className="text-sm text-white/60">Your Stake</span>
-// //           <span className="font-bold text-lg">{stake} coins</span>
-// //         </div>
-// //         <Slider
-// //           value={[stake]}
-// //           onValueChange={(value) => setStake(value[0])}
-// //           max={500}
-// //           min={10}
-// //           step={10}
-// //           className="mb-4"
-// //         />
-// //         <div className="flex justify-between text-xs text-white/40">
-// //           <span>10</span>
-// //           <span>250</span>
-// //           <span>500</span>
-// //         </div>
-// //       </div>
-
-// //       <div className="grid grid-cols-2 gap-4 mb-6">
-// //         <div className="p-4 rounded-xl bg-white/5">
-// //           <div className="text-white/50 text-sm mb-1">Total Pot</div>
-// //           <div className="text-2xl font-bold text-blue-400">{pot}</div>
-// //         </div>
-// //         <div className="p-4 rounded-xl bg-white/5">
-// //           <div className="text-white/50 text-sm mb-1">You Could Win</div>
-// //           <div className="text-2xl font-bold text-green-400">{winAmount}</div>
-// //         </div>
-// //       </div>
-
-// //       <div className="mb-6">
-// //         <div className="flex items-center justify-between text-sm mb-2">
-// //           <span className="text-white/60">75/25 Split</span>
-// //           <span className="text-emerald-400">{vaultSave} → Vault</span>
-// //         </div>
-// //         <div className="h-4 rounded-full overflow-hidden flex">
-// //           <div className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500" style={{ width: '75%' }} />
-// //           <div className="w-1/4 bg-gradient-to-r from-emerald-500 to-green-500" />
-// //         </div>
-// //         <div className="flex justify-between text-xs text-white/40 mt-1">
-// //           <span>Winner (75%)</span>
-// //           <span>Vault Save (25%)</span>
-// //         </div>
-// //       </div>
-
-// //       <Button className="w-full btn-primary">
-// //         <Target size={18} className="mr-2" />
-// //         Find Opponent
-// //       </Button>
-// //     </motion.div>
-// //   );
-// // }
-
-// // function LiveMatchCard({
-// //   opponent,
-// //   game,
-// //   stake,
-// //   status,
-// //   timeLeft,
-// // }: {
-// //   opponent: string;
-// //   game: string;
-// //   stake: number;
-// //   status: 'your-turn' | 'waiting';
-// //   timeLeft: string;
-// // }) {
-// //   return (
-// //     <motion.div
-// //       whileHover={{ scale: 1.02 }}
-// //       className="glass-card p-4"
-// //     >
-// //       <div className="flex items-center justify-between">
-// //         <div className="flex items-center gap-3">
-// //           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-sm font-bold">
-// //             {opponent.charAt(0)}
-// //           </div>
-// //           <div>
-// //             <h4 className="font-medium">vs {opponent}</h4>
-// //             <p className="text-white/50 text-sm">{game}</p>
-// //           </div>
-// //         </div>
-// //         <div className="text-right">
-// //           <div className="flex items-center gap-1 text-amber-400">
-// //             <Sparkles size={14} />
-// //             <span className="font-medium">{stake}</span>
-// //           </div>
-// //           <span className="text-xs text-white/40">{timeLeft}</span>
-// //         </div>
-// //       </div>
-// //       <div className="mt-4 flex items-center justify-between">
-// //         <span className={`text-sm ${status === 'your-turn' ? 'text-green-400' : 'text-yellow-400'}`}>
-// //           {status === 'your-turn' ? 'Your Turn!' : 'Waiting...'}
-// //         </span>
-// //         <Button size="sm" className={status === 'your-turn' ? 'btn-primary' : 'btn-secondary'}>
-// //           {status === 'your-turn' ? 'Play Now' : 'View'}
-// //         </Button>
-// //       </div>
-// //     </motion.div>
-// //   );
-// // }
-
-// // function LeaderboardEntry({
-// //   rank,
-// //   name,
-// //   score,
-// //   isUser,
-// //   trend,
-// // }: {
-// //   rank: number;
-// //   name: string;
-// //   score: number;
-// //   isUser?: boolean;
-// //   trend: 'up' | 'down' | 'same';
-// // }) {
-// //   const rankColors = {
-// //     1: 'from-yellow-400 to-amber-500',
-// //     2: 'from-gray-300 to-gray-400',
-// //     3: 'from-orange-400 to-amber-600',
-// //   };
-
-// //   return (
-// //     <motion.div
-// //       initial={{ opacity: 0, x: -20 }}
-// //       animate={{ opacity: 1, x: 0 }}
-// //       className={`flex items-center gap-4 p-3 rounded-xl ${isUser ? 'bg-blue-500/10 border border-blue-500/30' : 'bg-white/5'}`}
-// //     >
-// //       <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${
-// //         rank <= 3 ? `bg-gradient-to-br ${rankColors[rank as keyof typeof rankColors]} text-white` : 'bg-white/10'
-// //       }`}>
-// //         {rank <= 3 ? <Crown size={14} /> : rank}
-// //       </div>
-// //       <div className="flex-1">
-// //         <span className={`font-medium ${isUser ? 'text-blue-400' : ''}`}>{name}</span>
-// //         {isUser && <span className="text-xs text-blue-400 ml-2">(You)</span>}
-// //       </div>
-// //       <div className="flex items-center gap-2">
-// //         <TrendingUp size={14} className={trend === 'up' ? 'text-green-400' : trend === 'down' ? 'text-red-400' : 'text-white/30'} />
-// //         <span className="font-medium">{score.toLocaleString()}</span>
-// //       </div>
-// //     </motion.div>
-// //   );
-// // }
-
-// // export default function GamesArena() {
-// //   const { user } = useAuth();
-
-// //   const games = [
-// //     { title: 'Cosmic Runner', category: 'Arcade', players: '12.5K', reward: 50, difficulty: 'Easy' as const, isNew: true },
-// //     { title: 'Neon Puzzler', category: 'Puzzle', players: '8.2K', reward: 30, difficulty: 'Medium' as const },
-// //     { title: 'Star Blaster', category: 'Action', players: '15.1K', reward: 75, difficulty: 'Hard' as const },
-// //     { title: 'Quantum Quiz', category: 'Trivia', players: '6.8K', reward: 25, difficulty: 'Easy' as const },
-// //     { title: 'Void Vanguard', category: 'Strategy', players: '4.5K', reward: 100, difficulty: 'Hard' as const, isLocked: true },
-// //     { title: 'Pixel Racer', category: 'Racing', players: '9.3K', reward: 60, difficulty: 'Medium' as const },
-// //   ];
-
-// //   const liveMatches = [
-// //     { opponent: 'Alex', game: 'Cosmic Runner', stake: 100, status: 'your-turn' as const, timeLeft: '2:30' },
-// //     { opponent: 'Sarah', game: 'Neon Puzzler', stake: 50, status: 'waiting' as const, timeLeft: '5:00' },
-// //   ];
-
-// //   const topWinners = [
-// //     { rank: 1, name: 'DragonSlayer', score: 125000, trend: 'up' as const },
-// //     { rank: 2, name: 'NeonNinja', score: 98200, trend: 'same' as const },
-// //     { rank: 3, name: 'CosmicKing', score: 87600, trend: 'up' as const },
-// //     { rank: 4, name: 'PixelMaster', score: 72300, trend: 'down' as const },
-// //     { rank: 5, name: user?.name || 'You', score: 65400, trend: 'up' as const, isUser: true },
-// //   ];
-
-// //   const topSavers = [
-// //     { rank: 1, name: 'VaultKeeper', score: 450000, trend: 'up' as const },
-// //     { rank: 2, name: 'CoinHoarder', score: 380000, trend: 'up' as const },
-// //     { rank: 3, name: 'SafeSaver', score: 320000, trend: 'same' as const },
-// //     { rank: 4, name: 'WealthWise', score: 275000, trend: 'up' as const },
-// //     { rank: 5, name: user?.name || 'You', score: 125000, trend: 'up' as const, isUser: true },
-// //   ];
-
-// //   return (
-// //     <div className="space-y-6 pb-20">
-// //       <motion.div
-// //         initial={{ opacity: 0, y: -20 }}
-// //         animate={{ opacity: 1, y: 0 }}
-// //         className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
-// //       >
-// //         <div>
-// //           <h1 className="text-3xl font-bold mb-1 flex items-center gap-3">
-// //             <Gamepad2 className="text-purple-400" />
-// //             Games Arena
-// //           </h1>
-// //           <p className="text-white/60">Play, compete, and earn coins</p>
-// //         </div>
-// //         <div className="flex items-center gap-3">
-// //           <div className="glass px-4 py-2 rounded-full">
-// //             <Flame size={16} className="inline mr-2 text-orange-400" />
-// //             <span className="text-sm">Streak Protected</span>
-// //           </div>
-// //         </div>
-// //       </motion.div>
-
-// //       <motion.div
-// //         initial={{ opacity: 0, y: 20 }}
-// //         animate={{ opacity: 1, y: 0 }}
-// //         transition={{ delay: 0.1 }}
-// //         className="glass-card p-6 relative overflow-hidden"
-// //       >
-// //         <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-purple-500/10" />
-// //         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
-// //           <div className="flex items-center gap-4">
-// //             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center">
-// //               <Zap size={32} className="text-white" />
-// //             </div>
-// //             <div>
-// //               <h3 className="font-bold text-xl">Quick Play</h3>
-// //               <p className="text-white/60">Jump into a random game instantly</p>
-// //             </div>
-// //           </div>
-// //           <Button className="btn-primary text-lg px-8">
-// //             <Play size={20} className="mr-2" />
-// //             Play Now
-// //           </Button>
-// //         </div>
-// //       </motion.div>
-
-// //       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-// //         <div className="lg:col-span-2 space-y-6">
-// //           <Tabs defaultValue="all" className="w-full">
-// //             <TabsList className="glass mb-6">
-// //               <TabsTrigger value="all">All Games</TabsTrigger>
-// //               <TabsTrigger value="arcade">Arcade</TabsTrigger>
-// //               <TabsTrigger value="puzzle">Puzzle</TabsTrigger>
-// //               <TabsTrigger value="action">Action</TabsTrigger>
-// //             </TabsList>
-
-// //             <TabsContent value="all" className="mt-0">
-// //               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-// //                 {games.map((game, i) => (
-// //                   <motion.div
-// //                     key={i}
-// //                     initial={{ opacity: 0, y: 20 }}
-// //                     animate={{ opacity: 1, y: 0 }}
-// //                     transition={{ delay: i * 0.1 }}
-// //                   >
-// //                     <GameCard {...game} />
-// //                   </motion.div>
-// //                 ))}
-// //               </div>
-// //             </TabsContent>
-
-// //             <TabsContent value="arcade" className="mt-0">
-// //               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-// //                 {games.filter(g => g.category === 'Arcade').map((game, i) => (
-// //                   <GameCard key={i} {...game} />
-// //                 ))}
-// //               </div>
-// //             </TabsContent>
-
-// //             <TabsContent value="puzzle" className="mt-0">
-// //               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-// //                 {games.filter(g => g.category === 'Puzzle').map((game, i) => (
-// //                   <GameCard key={i} {...game} />
-// //                 ))}
-// //               </div>
-// //             </TabsContent>
-
-// //             <TabsContent value="action" className="mt-0">
-// //               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-// //                 {games.filter(g => g.category === 'Action').map((game, i) => (
-// //                   <GameCard key={i} {...game} />
-// //                 ))}
-// //               </div>
-// //             </TabsContent>
-// //           </Tabs>
-
-// //           <motion.div
-// //             initial={{ opacity: 0, y: 20 }}
-// //             animate={{ opacity: 1, y: 0 }}
-// //             transition={{ delay: 0.3 }}
-// //           >
-// //             <div className="flex items-center justify-between mb-4">
-// //               <h3 className="font-bold text-lg flex items-center gap-2">
-// //                 <Timer size={20} className="text-green-400" />
-// //                 Live Matches
-// //               </h3>
-// //               <Link to="/games" className="text-sm text-blue-400 hover:underline">
-// //                 View All
-// //               </Link>
-// //             </div>
-// //             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-// //               {liveMatches.map((match, i) => (
-// //                 <LiveMatchCard key={i} {...match} />
-// //               ))}
-// //             </div>
-// //           </motion.div>
-// //         </div>
-
-// //         <div className="space-y-6">
-// //           <ChallengeCard />
-
-// //           <motion.div
-// //             initial={{ opacity: 0, y: 20 }}
-// //             animate={{ opacity: 1, y: 0 }}
-// //             transition={{ delay: 0.4 }}
-// //             className="glass-card p-6"
-// //           >
-// //             <Tabs defaultValue="winners">
-// //               <div className="flex items-center justify-between mb-4">
-// //                 <h3 className="font-bold text-lg flex items-center gap-2">
-// //                   <Trophy size={20} className="text-amber-400" />
-// //                   Leaderboards
-// //                 </h3>
-// //                 <TabsList className="bg-white/5">
-// //                   <TabsTrigger value="winners" className="text-xs">Winners</TabsTrigger>
-// //                   <TabsTrigger value="savers" className="text-xs">Savers</TabsTrigger>
-// //                 </TabsList>
-// //               </div>
-
-// //               <TabsContent value="winners" className="mt-0 space-y-2">
-// //                 {topWinners.map((entry, i) => (
-// //                   <LeaderboardEntry key={i} {...entry} />
-// //                 ))}
-// //               </TabsContent>
-
-// //               <TabsContent value="savers" className="mt-0 space-y-2">
-// //                 {topSavers.map((entry, i) => (
-// //                   <LeaderboardEntry key={i} {...entry} />
-// //                 ))}
-// //               </TabsContent>
-// //             </Tabs>
-// //           </motion.div>
-
-// //           <motion.div
-// //             initial={{ opacity: 0, y: 20 }}
-// //             animate={{ opacity: 1, y: 0 }}
-// //             transition={{ delay: 0.5 }}
-// //             className="glass-card p-6"
-// //           >
-// //             <div className="flex items-center gap-3 mb-4">
-// //               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center">
-// //                 <Target size={24} className="text-white" />
-// //               </div>
-// //               <div>
-// //                 <h3 className="font-bold">Daily Challenge</h3>
-// //                 <p className="text-white/50 text-sm">Win 3 games today</p>
-// //               </div>
-// //             </div>
-// //             <div className="mb-4">
-// //               <div className="flex items-center justify-between text-sm mb-2">
-// //                 <span className="text-white/60">Progress</span>
-// //                 <span className="font-medium">1/3</span>
-// //               </div>
-// //               <Progress value={33} className="h-2" />
-// //             </div>
-// //             <div className="flex items-center justify-between">
-// //               <div className="flex items-center gap-1 text-amber-400">
-// //                 <Sparkles size={14} />
-// //                 <span className="font-medium">+200 coins</span>
-// //               </div>
-// //               <span className="text-xs text-white/40">12 hours left</span>
-// //             </div>
-// //           </motion.div>
-// //         </div>
-// //       </div>
-// //     </div>
-// //   );
-// // }
-
-
-
-
-// //======================================================================================================
-
-
-
-
-// import { useState } from 'react';
-// import { motion } from 'framer-motion';
-// import {
-//   Gamepad2,
-//   Users,
-//   Trophy,
-//   Zap,
-//   Target,
-//   Timer,
-//   Sparkles,
-//   Flame,
-//   TrendingUp,
-//   Play,
-//   Lock,
-//   Sword,
-//   Crown,
-// } from 'lucide-react';
-// import { Link } from 'react-router-dom';
-// import { useAuth } from '@/contexts/AuthContext';
-// import { Button } from '@/components/ui/button';
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-// import { Progress } from '@/components/ui/progress';
-// import { Slider } from '@/components/ui/slider';
-
-// function GameCard({
-//   title,
-//   category,
-//   players,
-//   reward,
-//   difficulty,
-//   isNew,
-//   isLocked,
-// }: {
-//   title: string;
-//   category: string;
-//   players: string;
-//   reward: number;
-//   difficulty: 'Easy' | 'Medium' | 'Hard';
-//   isNew?: boolean;
-//   isLocked?: boolean;
-// }) {
-//   const difficultyColors = {
-//     Easy: 'from-green-500 to-emerald-500',
-//     Medium: 'from-yellow-500 to-orange-500',
-//     Hard: 'from-red-500 to-pink-500',
-//   };
-
-//   return (
-//     <motion.div
-//       whileHover={!isLocked ? { scale: 1.03, y: -5 } : {}}
-//       className={`glass-card overflow-hidden group ${isLocked ? 'opacity-60' : 'cursor-pointer'}`}
-//       style={{
-//         backgroundImage: `url('data:image/svg+xml,%3Csvg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M0 15 L15 0 L30 15 L15 30 Z" stroke="%238b5cf6" stroke-width="0.5" stroke-opacity="0.05" fill="none"/%3E%3C/svg%3E')`,
-//         backgroundRepeat: 'repeat',
-//       }}
-//     >
-//       <div className="aspect-video relative overflow-hidden">
-//         <div className={`absolute inset-0 bg-gradient-to-br ${difficultyColors[difficulty]} opacity-20 group-hover:opacity-30 transition-opacity`} />
-//         <div className="absolute inset-0 flex items-center justify-center">
-//           <Gamepad2 size={48} className="text-white/30 group-hover:text-white/50 transition-colors" />
-//         </div>
-        
-//         <div className="absolute top-3 left-3 flex gap-2">
-//           {isNew && (
-//             <span className="px-2 py-1 rounded-full bg-green-500/80 text-white text-xs font-medium">
-//               NEW
-//             </span>
-//           )}
-//           <span className={`px-2 py-1 rounded-full bg-gradient-to-r ${difficultyColors[difficulty]} text-white text-xs font-medium`}>
-//             {difficulty}
-//           </span>
-//         </div>
-
-//         {isLocked && (
-//           <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-//             <Lock size={32} className="text-white/60" />
-//           </div>
-//         )}
-
-//         {!isLocked && (
-//           <motion.div
-//             initial={{ opacity: 0 }}
-//             whileHover={{ opacity: 1 }}
-//             className="absolute inset-0 bg-black/40 flex items-center justify-center"
-//           >
-//             <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-//               <Play size={28} className="text-white ml-1" />
-//             </div>
-//           </motion.div>
-//         )}
-//       </div>
-
-//       <div className="p-4">
-//         <div className="flex items-start justify-between mb-2">
-//           <div>
-//             <h3 className="font-bold group-hover:text-blue-400 transition-colors">{title}</h3>
-//             <p className="text-white/50 text-sm">{category}</p>
-//           </div>
-//         </div>
-//         <div className="flex items-center justify-between">
-//           <div className="flex items-center gap-3 text-sm text-white/50">
-//             <span className="flex items-center gap-1">
-//               <Users size={14} />
-//               {players}
-//             </span>
-//           </div>
-//           <div className="flex items-center gap-1 text-amber-400">
-//             <Sparkles size={14} />
-//             <span className="font-medium">+{reward}</span>
-//           </div>
-//         </div>
-//       </div>
-//     </motion.div>
-//   );
-// }
-
-// function ChallengeCard() {
-//   const [stake, setStake] = useState(50);
-//   const pot = stake * 2;
-//   const vaultSave = Math.floor(stake * 0.25);
-//   const fee = Math.floor(stake * 0.005);
-//   const winAmount = pot - vaultSave - fee;
-
-//   return (
-//     <motion.div
-//       initial={{ opacity: 0, y: 20 }}
-//       animate={{ opacity: 1, y: 0 }}
-//       className="glass-card p-6 relative overflow-hidden"
-//       style={{
-//         backgroundImage: `url('data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Crect x="0" y="0" width="1" height="1" fill="%23a855f7" fill-opacity="0.05"/%3E%3C/svg%3E')`,
-//         backgroundRepeat: 'repeat',
-//       }}
-//     >
-//       <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-transparent" />
-//       <div className="relative z-10">
-//         <div className="flex items-center gap-4 mb-6">
-//           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center">
-//             <Sword size={28} className="text-white" />
-//           </div>
-//           <div>
-//             <h3 className="font-bold text-lg">Challenge a Friend</h3>
-//             <p className="text-white/60 text-sm">Stake coins and compete head-to-head</p>
-//           </div>
-//         </div>
-
-//         <div className="mb-6">
-//           <div className="flex items-center justify-between mb-2">
-//             <span className="text-sm text-white/60">Your Stake</span>
-//             <span className="font-bold text-lg">{stake} coins</span>
-//           </div>
-//           <Slider
-//             value={[stake]}
-//             onValueChange={(value) => setStake(value[0])}
-//             max={500}
-//             min={10}
-//             step={10}
-//             className="mb-4"
-//           />
-//           <div className="flex justify-between text-xs text-white/40">
-//             <span>10</span>
-//             <span>250</span>
-//             <span>500</span>
-//           </div>
-//         </div>
-
-//         <div className="grid grid-cols-2 gap-4 mb-6">
-//           <div className="p-4 rounded-xl bg-white/5">
-//             <div className="text-white/50 text-sm mb-1">Total Pot</div>
-//             <div className="text-2xl font-bold text-blue-400">{pot}</div>
-//           </div>
-//           <div className="p-4 rounded-xl bg-white/5">
-//             <div className="text-white/50 text-sm mb-1">You Could Win</div>
-//             <div className="text-2xl font-bold text-green-400">{winAmount}</div>
-//           </div>
-//         </div>
-
-//         <div className="mb-6">
-//           <div className="flex items-center justify-between text-sm mb-2">
-//             <span className="text-white/60">75/25 Split</span>
-//             <span className="text-emerald-400">{vaultSave} → Vault</span>
-//           </div>
-//           <div className="h-4 rounded-full overflow-hidden flex">
-//             <div className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500" style={{ width: '75%' }} />
-//             <div className="w-1/4 bg-gradient-to-r from-emerald-500 to-green-500" />
-//           </div>
-//           <div className="flex justify-between text-xs text-white/40 mt-1">
-//             <span>Winner (75%)</span>
-//             <span>Vault Save (25%)</span>
-//           </div>
-//         </div>
-
-//         <Button className="w-full btn-primary">
-//           <Target size={18} className="mr-2" />
-//           Find Opponent
-//         </Button>
-//       </div>
-//     </motion.div>
-//   );
-// }
-
-// function LiveMatchCard({
-//   opponent,
-//   game,
-//   stake,
-//   status,
-//   timeLeft,
-// }: {
-//   opponent: string;
-//   game: string;
-//   stake: number;
-//   status: 'your-turn' | 'waiting';
-//   timeLeft: string;
-// }) {
-//   return (
-//     <motion.div
-//       whileHover={{ scale: 1.02 }}
-//       className="glass-card p-4 relative overflow-hidden"
-//       style={{
-//         backgroundImage: `url('data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Ccircle cx="3" cy="3" r="1" fill="%23ec4899" fill-opacity="0.03"/%3E%3C/svg%3E')`,
-//         backgroundRepeat: 'repeat',
-//       }}
-//     >
-//       <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5" />
-//       <div className="relative z-10">
-//         <div className="flex items-center justify-between">
-//           <div className="flex items-center gap-3">
-//             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-sm font-bold">
-//               {opponent.charAt(0)}
-//             </div>
-//             <div>
-//               <h4 className="font-medium">vs {opponent}</h4>
-//               <p className="text-white/50 text-sm">{game}</p>
-//             </div>
-//           </div>
-//           <div className="text-right">
-//             <div className="flex items-center gap-1 text-amber-400">
-//               <Sparkles size={14} />
-//               <span className="font-medium">{stake}</span>
-//             </div>
-//             <span className="text-xs text-white/40">{timeLeft}</span>
-//           </div>
-//         </div>
-//         <div className="mt-4 flex items-center justify-between">
-//           <span className={`text-sm ${status === 'your-turn' ? 'text-green-400' : 'text-yellow-400'}`}>
-//             {status === 'your-turn' ? 'Your Turn!' : 'Waiting...'}
-//           </span>
-//           <Button size="sm" className={status === 'your-turn' ? 'btn-primary' : 'btn-secondary'}>
-//             {status === 'your-turn' ? 'Play Now' : 'View'}
-//           </Button>
-//         </div>
-//       </div>
-//     </motion.div>
-//   );
-// }
-
-// function LeaderboardEntry({
-//   rank,
-//   name,
-//   score,
-//   isUser,
-//   trend,
-// }: {
-//   rank: number;
-//   name: string;
-//   score: number;
-//   isUser?: boolean;
-//   trend: 'up' | 'down' | 'same';
-// }) {
-//   const rankColors = {
-//     1: 'from-yellow-400 to-amber-500',
-//     2: 'from-gray-300 to-gray-400',
-//     3: 'from-orange-400 to-amber-600',
-//   };
-
-//   return (
-//     <motion.div
-//       initial={{ opacity: 0, x: -20 }}
-//       animate={{ opacity: 1, x: 0 }}
-//       className={`flex items-center gap-4 p-3 rounded-xl ${isUser ? 'bg-blue-500/10 border border-blue-500/30' : 'bg-white/5'}`}
-//     >
-//       <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${
-//         rank <= 3 ? `bg-gradient-to-br ${rankColors[rank as keyof typeof rankColors]} text-white` : 'bg-white/10'
-//       }`}>
-//         {rank <= 3 ? <Crown size={14} /> : rank}
-//       </div>
-//       <div className="flex-1">
-//         <span className={`font-medium ${isUser ? 'text-blue-400' : ''}`}>{name}</span>
-//         {isUser && <span className="text-xs text-blue-400 ml-2">(You)</span>}
-//       </div>
-//       <div className="flex items-center gap-2">
-//         <TrendingUp size={14} className={trend === 'up' ? 'text-green-400' : trend === 'down' ? 'text-red-400' : 'text-white/30'} />
-//         <span className="font-medium">{score.toLocaleString()}</span>
-//       </div>
-//     </motion.div>
-//   );
-// }
-
-// export default function GamesArena() {
-//   const { user } = useAuth();
-
-//   const games = [
-//     { title: 'Cosmic Runner', category: 'Arcade', players: '12.5K', reward: 50, difficulty: 'Easy' as const, isNew: true },
-//     { title: 'Neon Puzzler', category: 'Puzzle', players: '8.2K', reward: 30, difficulty: 'Medium' as const },
-//     { title: 'Star Blaster', category: 'Action', players: '15.1K', reward: 75, difficulty: 'Hard' as const },
-//     { title: 'Quantum Quiz', category: 'Trivia', players: '6.8K', reward: 25, difficulty: 'Easy' as const },
-//     { title: 'Void Vanguard', category: 'Strategy', players: '4.5K', reward: 100, difficulty: 'Hard' as const, isLocked: true },
-//     { title: 'Pixel Racer', category: 'Racing', players: '9.3K', reward: 60, difficulty: 'Medium' as const },
-//   ];
-
-//   const liveMatches = [
-//     { opponent: 'Alex', game: 'Cosmic Runner', stake: 100, status: 'your-turn' as const, timeLeft: '2:30' },
-//     { opponent: 'Sarah', game: 'Neon Puzzler', stake: 50, status: 'waiting' as const, timeLeft: '5:00' },
-//   ];
-
-//   const topWinners = [
-//     { rank: 1, name: 'DragonSlayer', score: 125000, trend: 'up' as const },
-//     { rank: 2, name: 'NeonNinja', score: 98200, trend: 'same' as const },
-//     { rank: 3, name: 'CosmicKing', score: 87600, trend: 'up' as const },
-//     { rank: 4, name: 'PixelMaster', score: 72300, trend: 'down' as const },
-//     { rank: 5, name: user?.name || 'You', score: 65400, trend: 'up' as const, isUser: true },
-//   ];
-
-//   const topSavers = [
-//     { rank: 1, name: 'VaultKeeper', score: 450000, trend: 'up' as const },
-//     { rank: 2, name: 'CoinHoarder', score: 380000, trend: 'up' as const },
-//     { rank: 3, name: 'SafeSaver', score: 320000, trend: 'same' as const },
-//     { rank: 4, name: 'WealthWise', score: 275000, trend: 'up' as const },
-//     { rank: 5, name: user?.name || 'You', score: 125000, trend: 'up' as const, isUser: true },
-//   ];
-
-//   return (
-//     <div className="space-y-6 pb-20 relative">
-//       {/* Background Pattern */}
-//       <div 
-//         className="fixed inset-0 pointer-events-none"
-//         style={{
-//           backgroundImage: `url('data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M0 10 L10 0 L20 10 L10 20 Z M20 20 L30 10 L40 20 L30 30 Z" stroke="%238b5cf6" stroke-width="0.5" stroke-opacity="0.03" fill="none"/%3E%3C/svg%3E')`,
-//           backgroundRepeat: 'repeat',
-//         }}
-//       />
-
-//       <motion.div
-//         initial={{ opacity: 0, y: -20 }}
-//         animate={{ opacity: 1, y: 0 }}
-//         className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10"
-//       >
-//         <div>
-//           <h1 className="text-3xl font-bold mb-1 flex items-center gap-3">
-//             <Gamepad2 className="text-purple-400" />
-//             Games Arena
-//           </h1>
-//           <p className="text-white/60">Play, compete, and earn coins</p>
-//         </div>
-//         <div className="flex items-center gap-3">
-//           <div className="glass px-4 py-2 rounded-full">
-//             <Flame size={16} className="inline mr-2 text-orange-400" />
-//             <span className="text-sm">Streak Protected</span>
-//           </div>
-//         </div>
-//       </motion.div>
-
-//       <motion.div
-//         initial={{ opacity: 0, y: 20 }}
-//         animate={{ opacity: 1, y: 0 }}
-//         transition={{ delay: 0.1 }}
-//         className="glass-card p-6 relative overflow-hidden"
-//         style={{
-//           backgroundImage: `url('data:image/svg+xml,%3Csvg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg"%3E%3Ccircle cx="15" cy="15" r="2" fill="%23a855f7" fill-opacity="0.05"/%3E%3C/svg%3E')`,
-//           backgroundRepeat: 'repeat',
-//         }}
-//       >
-//         <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-purple-500/10" />
-//         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
-//           <div className="flex items-center gap-4">
-//             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center">
-//               <Zap size={32} className="text-white" />
-//             </div>
-//             <div>
-//               <h3 className="font-bold text-xl">Quick Play</h3>
-//               <p className="text-white/60">Jump into a random game instantly</p>
-//             </div>
-//           </div>
-//           <Button className="btn-primary text-lg px-8">
-//             <Play size={20} className="mr-2" />
-//             Play Now
-//           </Button>
-//         </div>
-//       </motion.div>
-
-//       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-//         <div className="lg:col-span-2 space-y-6">
-//           <Tabs defaultValue="all" className="w-full">
-//             <TabsList className="glass mb-6">
-//               <TabsTrigger value="all">All Games</TabsTrigger>
-//               <TabsTrigger value="arcade">Arcade</TabsTrigger>
-//               <TabsTrigger value="puzzle">Puzzle</TabsTrigger>
-//               <TabsTrigger value="action">Action</TabsTrigger>
-//             </TabsList>
-
-//             <TabsContent value="all" className="mt-0">
-//               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-//                 {games.map((game, i) => (
-//                   <motion.div
-//                     key={i}
-//                     initial={{ opacity: 0, y: 20 }}
-//                     animate={{ opacity: 1, y: 0 }}
-//                     transition={{ delay: i * 0.1 }}
-//                   >
-//                     <GameCard {...game} />
-//                   </motion.div>
-//                 ))}
-//               </div>
-//             </TabsContent>
-
-//             <TabsContent value="arcade" className="mt-0">
-//               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-//                 {games.filter(g => g.category === 'Arcade').map((game, i) => (
-//                   <GameCard key={i} {...game} />
-//                 ))}
-//               </div>
-//             </TabsContent>
-
-//             <TabsContent value="puzzle" className="mt-0">
-//               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-//                 {games.filter(g => g.category === 'Puzzle').map((game, i) => (
-//                   <GameCard key={i} {...game} />
-//                 ))}
-//               </div>
-//             </TabsContent>
-
-//             <TabsContent value="action" className="mt-0">
-//               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-//                 {games.filter(g => g.category === 'Action').map((game, i) => (
-//                   <GameCard key={i} {...game} />
-//                 ))}
-//               </div>
-//             </TabsContent>
-//           </Tabs>
-
-//           <motion.div
-//             initial={{ opacity: 0, y: 20 }}
-//             animate={{ opacity: 1, y: 0 }}
-//             transition={{ delay: 0.3 }}
-//           >
-//             <div className="flex items-center justify-between mb-4">
-//               <h3 className="font-bold text-lg flex items-center gap-2">
-//                 <Timer size={20} className="text-green-400" />
-//                 Live Matches
-//               </h3>
-//               <Link to="/games" className="text-sm text-blue-400 hover:underline">
-//                 View All
-//               </Link>
-//             </div>
-//             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-//               {liveMatches.map((match, i) => (
-//                 <LiveMatchCard key={i} {...match} />
-//               ))}
-//             </div>
-//           </motion.div>
-//         </div>
-
-//         <div className="space-y-6">
-//           <ChallengeCard />
-
-//           <motion.div
-//             initial={{ opacity: 0, y: 20 }}
-//             animate={{ opacity: 1, y: 0 }}
-//             transition={{ delay: 0.4 }}
-//             className="glass-card p-6 relative overflow-hidden"
-//             style={{
-//               backgroundImage: `url('data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Crect x="0" y="0" width="1" height="1" fill="%23f59e0b" fill-opacity="0.05"/%3E%3C/svg%3E')`,
-//               backgroundRepeat: 'repeat',
-//             }}
-//           >
-//             <div className="absolute inset-0 bg-gradient-to-b from-amber-500/5 to-transparent" />
-//             <div className="relative z-10">
-//               <Tabs defaultValue="winners">
-//                 <div className="flex items-center justify-between mb-4">
-//                   <h3 className="font-bold text-lg flex items-center gap-2">
-//                     <Trophy size={20} className="text-amber-400" />
-//                     Leaderboards
-//                   </h3>
-//                   <TabsList className="bg-white/5">
-//                     <TabsTrigger value="winners" className="text-xs">Winners</TabsTrigger>
-//                     <TabsTrigger value="savers" className="text-xs">Savers</TabsTrigger>
-//                   </TabsList>
-//                 </div>
-
-//                 <TabsContent value="winners" className="mt-0 space-y-2">
-//                   {topWinners.map((entry, i) => (
-//                     <LeaderboardEntry key={i} {...entry} />
-//                   ))}
-//                 </TabsContent>
-
-//                 <TabsContent value="savers" className="mt-0 space-y-2">
-//                   {topSavers.map((entry, i) => (
-//                     <LeaderboardEntry key={i} {...entry} />
-//                   ))}
-//                 </TabsContent>
-//               </Tabs>
-//             </div>
-//           </motion.div>
-
-//           <motion.div
-//             initial={{ opacity: 0, y: 20 }}
-//             animate={{ opacity: 1, y: 0 }}
-//             transition={{ delay: 0.5 }}
-//             className="glass-card p-6 relative overflow-hidden"
-//             style={{
-//               backgroundImage: `url('data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Ccircle cx="10" cy="10" r="2" fill="%23ec4899" fill-opacity="0.03"/%3E%3C/svg%3E')`,
-//               backgroundRepeat: 'repeat',
-//             }}
-//           >
-//             <div className="absolute inset-0 bg-gradient-to-b from-pink-500/5 to-transparent" />
-//             <div className="relative z-10">
-//               <div className="flex items-center gap-3 mb-4">
-//                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center">
-//                   <Target size={24} className="text-white" />
-//                 </div>
-//                 <div>
-//                   <h3 className="font-bold">Daily Challenge</h3>
-//                   <p className="text-white/50 text-sm">Win 3 games today</p>
-//                 </div>
-//               </div>
-//               <div className="mb-4">
-//                 <div className="flex items-center justify-between text-sm mb-2">
-//                   <span className="text-white/60">Progress</span>
-//                   <span className="font-medium">1/3</span>
-//                 </div>
-//                 <Progress value={33} className="h-2" />
-//               </div>
-//               <div className="flex items-center justify-between">
-//                 <div className="flex items-center gap-1 text-amber-400">
-//                   <Sparkles size={14} />
-//                   <span className="font-medium">+200 coins</span>
-//                 </div>
-//                 <span className="text-xs text-white/40">12 hours left</span>
-//               </div>
-//             </div>
-//           </motion.div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
-
-//////===============================================================================================================================================================================
-
-
-
-
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Gamepad2,
-  Users,
-  Trophy,
-  Zap,
-  Target,
-  Timer,
-  Sparkles,
-  Flame,
-  TrendingUp,
-  Play,
-  Lock,
-  Sword,
-  Crown,
+  Gamepad2, Users, Trophy, Zap, Target, Sparkles,
+  Flame, Play, Star, ChevronRight, ChevronLeft,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { Slider } from '@/components/ui/slider';
+import { useLoop } from '@/contexts/LoopContext';
+import CosmicRunner from '@/components/games/CosmicRunner';
+import NeonPuzzler from '@/components/games/NeonPuzzler';
+import StarBlaster from '@/components/games/StarBlaster';
+import QuantumQuiz from '@/components/games/QuantumQuiz';
+import VoidVanguard from '@/components/games/VoidVanguard';
+import PixelRacer from '@/components/games/PixelRacer';
 
-// Background images for games
-const BG_IMAGES = {
-  cosmic: 'https://images.unsplash.com/photo-1614730341194-75c607400070?w=400&h=300&fit=crop',
-  neon: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop',
-  star: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=400&h=300&fit=crop',
-  quiz: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=300&fit=crop',
-  void: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=400&h=300&fit=crop',
-  racer: 'https://images.unsplash.com/photo-1511994714008-b6d68a8b32a2?w=400&h=300&fit=crop',
-  hero: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&h=400&fit=crop',
-  challenge: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop',
-  leaderboard: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=300&fit=crop',
-};
+type Difficulty = 'Easy' | 'Medium' | 'Hard';
+type GameId = 'cosmic' | 'neon' | 'star' | 'quiz' | 'void' | 'racer';
 
-function GameCard({
-  title,
-  category,
-  players,
-  reward,
-  difficulty,
-  isNew,
-  isLocked,
-  bgImage,
-}: {
+interface GameDef {
+  id: GameId;
   title: string;
+  emoji: string;
   category: string;
   players: string;
   reward: number;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
-  isNew?: boolean;
-  isLocked?: boolean;
-  bgImage: string;
-}) {
-  const difficultyColors = {
-    Easy: 'from-green-500 to-emerald-500',
-    Medium: 'from-yellow-500 to-orange-500',
-    Hard: 'from-red-500 to-pink-500',
-  };
-
-  return (
-    <motion.div
-      whileHover={!isLocked ? { scale: 1.03, y: -5 } : {}}
-      className={`glass-card overflow-hidden group relative ${isLocked ? 'opacity-60' : 'cursor-pointer'}`}
-      style={{
-        backgroundImage: `linear-gradient(135deg, rgba(10, 14, 23, 0.9) 0%, rgba(10, 14, 23, 0.95) 100%), url(${bgImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      <div className="aspect-video relative overflow-hidden">
-        <div className={`absolute inset-0 bg-gradient-to-br ${difficultyColors[difficulty]} opacity-20 group-hover:opacity-30 transition-opacity`} />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Gamepad2 size={48} className="text-white/30 group-hover:text-white/50 transition-colors" />
-        </div>
-        
-        <div className="absolute top-3 left-3 flex gap-2">
-          {isNew && (
-            <span className="px-2 py-1 rounded-full bg-green-500/80 text-white text-xs font-medium backdrop-blur-sm">
-              NEW
-            </span>
-          )}
-          <span className={`px-2 py-1 rounded-full bg-gradient-to-r ${difficultyColors[difficulty]} text-white text-xs font-medium backdrop-blur-sm`}>
-            {difficulty}
-          </span>
-        </div>
-
-        {isLocked && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-            <Lock size={32} className="text-white/60" />
-          </div>
-        )}
-
-        {!isLocked && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileHover={{ opacity: 1 }}
-            className="absolute inset-0 bg-black/40 flex items-center justify-center"
-          >
-            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <Play size={28} className="text-white ml-1" />
-            </div>
-          </motion.div>
-        )}
-      </div>
-
-      <div className="p-4 relative z-10">
-        <div className="flex items-start justify-between mb-2">
-          <div>
-            <h3 className="font-bold group-hover:text-blue-400 transition-colors">{title}</h3>
-            <p className="text-white/50 text-sm">{category}</p>
-          </div>
-        </div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 text-sm text-white/50">
-            <span className="flex items-center gap-1">
-              <Users size={14} />
-              {players}
-            </span>
-          </div>
-          <div className="flex items-center gap-1 text-amber-400">
-            <Sparkles size={14} />
-            <span className="font-medium">+{reward}</span>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
+  description: string;
+  gradient: string;
+  accentColor: string;
+  controls: string;
 }
 
-function ChallengeCard() {
-  const [stake, setStake] = useState(50);
-  const pot = stake * 2;
-  const vaultSave = Math.floor(stake * 0.25);
-  const fee = Math.floor(stake * 0.005);
-  const winAmount = pot - vaultSave - fee;
+const GAMES: GameDef[] = [
+  {
+    id: 'cosmic',
+    title: 'Cosmic Runner',
+    emoji: '🚀',
+    category: 'Arcade',
+    players: '12.5K',
+    reward: 50,
+    description: 'Dodge meteors in an endless space run. Jump over obstacles before they crush your ship!',
+    gradient: 'from-violet-600 via-purple-600 to-indigo-600',
+    accentColor: '#818cf8',
+    controls: 'SPACE / Click to jump',
+  },
+  {
+    id: 'neon',
+    title: 'Neon Puzzler',
+    emoji: '🧩',
+    category: 'Puzzle',
+    players: '8.2K',
+    reward: 30,
+    description: 'Slide glowing tiles into the correct order. Beat the clock in this neon-lit puzzle challenge!',
+    gradient: 'from-cyan-600 via-sky-600 to-blue-600',
+    accentColor: '#38bdf8',
+    controls: 'Click tiles to slide',
+  },
+  {
+    id: 'star',
+    title: 'Star Blaster',
+    emoji: '🎯',
+    category: 'Action',
+    players: '15.1K',
+    reward: 75,
+    description: 'Command a starship against waves of alien invaders. Survive and destroy your target kill count!',
+    gradient: 'from-indigo-600 via-violet-600 to-purple-600',
+    accentColor: '#6366f1',
+    controls: 'WASD to move, SPACE to shoot',
+  },
+  {
+    id: 'quiz',
+    title: 'Quantum Quiz',
+    emoji: '🧠',
+    category: 'Trivia',
+    players: '6.8K',
+    reward: 25,
+    description: 'Test your knowledge across Science, Math, History & Tech. Answer before the timer runs out!',
+    gradient: 'from-purple-600 via-violet-600 to-fuchsia-600',
+    accentColor: '#a855f7',
+    controls: 'Click to choose answer',
+  },
+  {
+    id: 'void',
+    title: 'Void Vanguard',
+    emoji: '⚔️',
+    category: 'Strategy',
+    players: '4.5K',
+    reward: 100,
+    description: 'Push glowing boxes onto goal tiles in this sci-fi Sokoban. Think before you move!',
+    gradient: 'from-violet-700 via-purple-700 to-indigo-700',
+    accentColor: '#7c3aed',
+    controls: 'WASD / Arrow keys to move',
+  },
+  {
+    id: 'racer',
+    title: 'Pixel Racer',
+    emoji: '🏎️',
+    category: 'Racing',
+    players: '9.3K',
+    reward: 60,
+    description: 'Weave through traffic at high speed. Drive the target distance without crashing!',
+    gradient: 'from-blue-600 via-indigo-600 to-violet-600',
+    accentColor: '#4f46e5',
+    controls: 'Arrow keys / A-D to change lane',
+  },
+];
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="glass-card p-6 relative overflow-hidden"
-      style={{
-        backgroundImage: `linear-gradient(135deg, rgba(10, 14, 23, 0.95) 0%, rgba(10, 14, 23, 0.9) 100%), url(${BG_IMAGES.challenge})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      <div className="relative z-10">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center shadow-lg">
-            <Sword size={28} className="text-white" />
-          </div>
-          <div>
-            <h3 className="font-bold text-lg">Challenge a Friend</h3>
-            <p className="text-white/60 text-sm">Stake coins and compete head-to-head</p>
-          </div>
-        </div>
+const DIFF_CONFIG: Record<Difficulty, { label: string; color: string; bg: string; border: string; emoji: string; desc: string }> = {
+  Easy: { label: 'Easy', color: '#34d399', bg: 'rgba(16,185,129,0.12)', border: 'rgba(16,185,129,0.4)', emoji: '🟢', desc: '100 levels — Beginner friendly' },
+  Medium: { label: 'Medium', color: '#fbbf24', bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.4)', emoji: '🟡', desc: '100 levels — Balanced challenge' },
+  Hard: { label: 'Hard', color: '#f87171', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.4)', emoji: '🔴', desc: '100 levels — For the elite' },
+};
 
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-white/60">Your Stake</span>
-            <span className="font-bold text-lg">{stake} coins</span>
-          </div>
-          <Slider
-            value={[stake]}
-            onValueChange={(value) => setStake(value[0])}
-            max={500}
-            min={10}
-            step={10}
-            className="mb-4"
-          />
-          <div className="flex justify-between text-xs text-white/40">
-            <span>10</span>
-            <span>250</span>
-            <span>500</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="p-4 rounded-xl bg-white/5">
-            <div className="text-white/50 text-sm mb-1">Total Pot</div>
-            <div className="text-2xl font-bold text-blue-400">{pot}</div>
-          </div>
-          <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/30">
-            <div className="text-white/50 text-sm mb-1">You Could Win</div>
-            <div className="text-2xl font-bold text-green-400">{winAmount}</div>
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <div className="flex items-center justify-between text-sm mb-2">
-            <span className="text-white/60">75/25 Split</span>
-            <span className="text-emerald-400">{vaultSave} → Vault</span>
-          </div>
-          <div className="h-4 rounded-full overflow-hidden flex">
-            <div className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500" style={{ width: '75%' }} />
-            <div className="w-1/4 bg-gradient-to-r from-emerald-500 to-green-500" />
-          </div>
-          <div className="flex justify-between text-xs text-white/40 mt-1">
-            <span>Winner (75%)</span>
-            <span>Vault Save (25%)</span>
-          </div>
-        </div>
-
-        <Button className="w-full btn-primary">
-          <Target size={18} className="mr-2" />
-          Find Opponent
-        </Button>
-      </div>
-    </motion.div>
-  );
+interface ActiveGame {
+  id: GameId;
+  difficulty: Difficulty;
+  level: number;
 }
 
-function LiveMatchCard({
-  opponent,
-  game,
-  stake,
-  status,
-  timeLeft,
-}: {
-  opponent: string;
-  game: string;
-  stake: number;
-  status: 'your-turn' | 'waiting';
-  timeLeft: string;
-}) {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.02 }}
-      className="glass-card p-4"
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-sm font-bold">
-            {opponent.charAt(0)}
-          </div>
-          <div>
-            <h4 className="font-medium">vs {opponent}</h4>
-            <p className="text-white/50 text-sm">{game}</p>
-          </div>
-        </div>
-        <div className="text-right">
-          <div className="flex items-center gap-1 text-amber-400">
-            <Sparkles size={14} />
-            <span className="font-medium">{stake}</span>
-          </div>
-          <span className="text-xs text-white/40">{timeLeft}</span>
-        </div>
-      </div>
-      <div className="mt-4 flex items-center justify-between">
-        <span className={`text-sm ${status === 'your-turn' ? 'text-green-400' : 'text-yellow-400'}`}>
-          {status === 'your-turn' ? 'Your Turn!' : 'Waiting...'}
-        </span>
-        <Button size="sm" className={status === 'your-turn' ? 'btn-primary' : 'btn-secondary'}>
-          {status === 'your-turn' ? 'Play Now' : 'View'}
-        </Button>
-      </div>
-    </motion.div>
-  );
-}
-
-function LeaderboardEntry({
-  rank,
-  name,
-  score,
-  isUser,
-  trend,
-}: {
-  rank: number;
-  name: string;
-  score: number;
-  isUser?: boolean;
-  trend: 'up' | 'down' | 'same';
-}) {
-  const rankColors = {
-    1: 'from-yellow-400 to-amber-500',
-    2: 'from-gray-300 to-gray-400',
-    3: 'from-orange-400 to-amber-600',
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      className={`flex items-center gap-4 p-3 rounded-xl ${isUser ? 'bg-blue-500/10 border border-blue-500/30' : 'bg-white/5'}`}
-    >
-      <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${
-        rank <= 3 ? `bg-gradient-to-br ${rankColors[rank as keyof typeof rankColors]} text-white` : 'bg-white/10'
-      }`}>
-        {rank <= 3 ? <Crown size={14} /> : rank}
-      </div>
-      <div className="flex-1">
-        <span className={`font-medium ${isUser ? 'text-blue-400' : ''}`}>{name}</span>
-        {isUser && <span className="text-xs text-blue-400 ml-2">(You)</span>}
-      </div>
-      <div className="flex items-center gap-2">
-        <TrendingUp size={14} className={trend === 'up' ? 'text-green-400' : trend === 'down' ? 'text-red-400' : 'text-white/30'} />
-        <span className="font-medium">{score.toLocaleString()}</span>
-      </div>
-    </motion.div>
-  );
+interface GameProgress {
+  [key: string]: { maxLevel: number; totalScore: number; };
 }
 
 export default function GamesArena() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
+  const { recordAction, consumeBridge, getPendingBridge } = useLoop();
+  const [activeGame, setActiveGame] = useState<ActiveGame | null>(null);
+  const [selectedGame, setSelectedGame] = useState<GameDef | null>(null);
+  const [selectedDiff, setSelectedDiff] = useState<Difficulty>('Easy');
+  const [progress, setProgress] = useState<GameProgress>({});
+  const [completedCount, setCompletedCount] = useState(0);
+  const [totalScore, setTotalScore] = useState(0);
+  const [rewardToast, setRewardToast] = useState<string | null>(null);
 
-  const games = [
-    { title: 'Cosmic Runner', category: 'Arcade', players: '12.5K', reward: 50, difficulty: 'Easy' as const, isNew: true, bgImage: BG_IMAGES.cosmic },
-    { title: 'Neon Puzzler', category: 'Puzzle', players: '8.2K', reward: 30, difficulty: 'Medium' as const, bgImage: BG_IMAGES.neon },
-    { title: 'Star Blaster', category: 'Action', players: '15.1K', reward: 75, difficulty: 'Hard' as const, bgImage: BG_IMAGES.star },
-    { title: 'Quantum Quiz', category: 'Trivia', players: '6.8K', reward: 25, difficulty: 'Easy' as const, bgImage: BG_IMAGES.quiz },
-    { title: 'Void Vanguard', category: 'Strategy', players: '4.5K', reward: 100, difficulty: 'Hard' as const, isLocked: true, bgImage: BG_IMAGES.void },
-    { title: 'Pixel Racer', category: 'Racing', players: '9.3K', reward: 60, difficulty: 'Medium' as const, bgImage: BG_IMAGES.racer },
-  ];
+  const showToast = (msg: string) => {
+    setRewardToast(msg);
+    setTimeout(() => setRewardToast(null), 3500);
+  };
 
-  const liveMatches = [
-    { opponent: 'Alex', game: 'Cosmic Runner', stake: 100, status: 'your-turn' as const, timeLeft: '2:30' },
-    { opponent: 'Sarah', game: 'Neon Puzzler', stake: 50, status: 'waiting' as const, timeLeft: '5:00' },
-  ];
+  const launchGame = (game: GameDef, diff: Difficulty) => {
+    const key = `${game.id}-${diff}`;
+    const savedLevel = progress[key]?.maxLevel ?? 1;
+    setActiveGame({ id: game.id, difficulty: diff, level: savedLevel });
+    setSelectedGame(null);
+    // Check for Rested Warrior bridge (from entertainment)
+    const bridge = consumeBridge('games');
+    if (bridge) showToast(`🎮 ${bridge.token}: ${bridge.description}`);
+    // Record play action
+    recordAction('games', 'play', game.reward);
+  };
 
-  const topWinners = [
-    { rank: 1, name: 'DragonSlayer', score: 125000, trend: 'up' as const },
-    { rank: 2, name: 'NeonNinja', score: 98200, trend: 'same' as const },
-    { rank: 3, name: 'CosmicKing', score: 87600, trend: 'up' as const },
-    { rank: 4, name: 'PixelMaster', score: 72300, trend: 'down' as const },
-    { rank: 5, name: user?.name || 'You', score: 65400, trend: 'up' as const, isUser: true },
-  ];
+  const handleLevelComplete = (level: number, score: number) => {
+    if (!activeGame) return;
+    const key = `${activeGame.id}-${activeGame.difficulty}`;
+    setProgress(prev => ({
+      ...prev,
+      [key]: {
+        maxLevel: Math.max(level + 1, prev[key]?.maxLevel ?? 1),
+        totalScore: (prev[key]?.totalScore ?? 0) + score,
+      },
+    }));
+    setCompletedCount(c => c + 1);
+    setTotalScore(s => s + score);
 
-  const topSavers = [
-    { rank: 1, name: 'VaultKeeper', score: 450000, trend: 'up' as const },
-    { rank: 2, name: 'CoinHoarder', score: 380000, trend: 'up' as const },
-    { rank: 3, name: 'SafeSaver', score: 320000, trend: 'same' as const },
-    { rank: 4, name: 'WealthWise', score: 275000, trend: 'up' as const },
-    { rank: 5, name: user?.name || 'You', score: 125000, trend: 'up' as const, isUser: true },
-  ];
+    // Record win in loop engine
+    const result = recordAction('games', 'win_complete', score);
+    if (user) updateUser({ coins: user.coins + result.acEarned });
+    const msgs = [`+${result.acEarned} AC earned! (${result.totalMultiplier.toFixed(1)}x multiplier)`];
+    if (result.sfEarned)  msgs.push('🔥 +1 Streak Fuel');
+    if (result.bridgeCreated) msgs.push(`🎁 ${result.bridgeCreated.token} unlocked → Shop`);
+    if (result.boostActivated) msgs.push(result.boostActivated.label);
+    showToast(msgs[0]);
+  };
+
+  const getProgress = (gameId: GameId, diff: Difficulty) => {
+    const key = `${gameId}-${diff}`;
+    return { level: progress[key]?.maxLevel ?? 1, score: progress[key]?.totalScore ?? 0 };
+  };
+
+  const renderGame = () => {
+    if (!activeGame) return null;
+    const props = {
+      difficulty: activeGame.difficulty,
+      initialLevel: activeGame.level,
+      onClose: () => setActiveGame(null),
+      onLevelComplete: handleLevelComplete,
+    };
+    switch (activeGame.id) {
+      case 'cosmic': return <CosmicRunner {...props} />;
+      case 'neon': return <NeonPuzzler {...props} />;
+      case 'star': return <StarBlaster {...props} />;
+      case 'quiz': return <QuantumQuiz {...props} />;
+      case 'void': return <VoidVanguard {...props} />;
+      case 'racer': return <PixelRacer {...props} />;
+      default: return null;
+    }
+  };
 
   return (
     <div className="space-y-6 pb-20">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
-      >
+      {/* Reward Toast */}
+      <AnimatePresence>
+        {rewardToast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-[300] px-5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-2xl"
+            style={{ background: 'linear-gradient(135deg,#7c3aed,#6366f1)', boxShadow: '0 0 30px rgba(124,58,237,0.5)' }}
+          >
+            {rewardToast}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* Bridge hint banner */}
+      {(() => { const b = getPendingBridge('games'); return b ? (
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+          className="rounded-xl px-4 py-2.5 flex items-center gap-3 text-sm"
+          style={{ background: 'rgba(124,58,237,0.15)', border: '1px solid rgba(124,58,237,0.4)' }}>
+          <span className="text-xl">🎁</span>
+          <div><span className="font-bold text-purple-300">{b.token} Active: </span>
+            <span className="text-white/70">{b.description}</span></div>
+        </motion.div>
+      ) : null; })()}
+
+      {/* Header */}
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold mb-1 flex items-center gap-3">
             <Gamepad2 className="text-purple-400" />
             Games Arena
           </h1>
-          <p className="text-white/60">Play, compete, and earn coins</p>
+          <p className="text-white/60">6 real games • 3 difficulty modes • 100 levels each</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="glass px-4 py-2 rounded-full backdrop-blur-xl">
-            <Flame size={16} className="inline mr-2 text-orange-400" />
-            <span className="text-sm">Streak Protected</span>
+          <div className="glass px-3 py-1.5 rounded-full flex items-center gap-2">
+            <Trophy size={14} className="text-amber-400" />
+            <span className="text-sm text-white/80">{completedCount} levels cleared</span>
+          </div>
+          <div className="glass px-3 py-1.5 rounded-full flex items-center gap-2">
+            <Sparkles size={14} className="text-amber-400" />
+            <span className="text-sm text-white/80">{totalScore.toLocaleString()} pts</span>
+          </div>
+          <div className="glass px-3 py-1.5 rounded-full flex items-center gap-2">
+            <Flame size={14} className="text-orange-400" />
+            <span className="text-sm text-white/80">Streak Active</span>
           </div>
         </div>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
+      {/* Hero banner */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
         className="glass-card p-6 relative overflow-hidden"
-        style={{
-          backgroundImage: `linear-gradient(135deg, rgba(10, 14, 23, 0.9) 0%, rgba(10, 14, 23, 0.85) 100%), url(${BG_IMAGES.hero})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-purple-500/20" />
+        style={{ background: 'linear-gradient(135deg,rgba(124,58,237,0.15),rgba(99,102,241,0.1),rgba(124,58,237,0.15))', border: '1px solid rgba(124,58,237,0.3)' }}>
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-purple-500/10" />
         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center shadow-lg">
-              <Zap size={32} className="text-white" />
-            </div>
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
+              style={{ background: 'linear-gradient(135deg,#7c3aed,#6366f1)', boxShadow: '0 0 24px rgba(124,58,237,0.4)' }}>🎮</div>
             <div>
-              <h3 className="font-bold text-xl">Quick Play</h3>
-              <p className="text-white/60">Jump into a random game instantly</p>
+              <h3 className="font-bold text-xl text-white">Real Games, Real Levels</h3>
+              <p className="text-white/60 text-sm">300 levels per game • 1,800 total levels across all games</p>
+              <div className="flex items-center gap-4 mt-1">
+                {(['Easy', 'Medium', 'Hard'] as Difficulty[]).map(d => (
+                  <span key={d} className="text-xs flex items-center gap-1" style={{ color: DIFF_CONFIG[d].color }}>
+                    {DIFF_CONFIG[d].emoji} {d}: 100 levels
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
-          <Button className="btn-primary text-lg px-8 shadow-lg shadow-purple-500/25">
-            <Play size={20} className="mr-2" />
-            Play Now
-          </Button>
+          <div className="flex items-center gap-2 text-white/50 text-sm">
+            <Zap size={16} className="text-purple-400" />
+            <span>Click any game to start</span>
+          </div>
         </div>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <Tabs defaultValue="all" className="w-full">
-            <TabsList className="glass mb-6 backdrop-blur-xl">
-              <TabsTrigger value="all">All Games</TabsTrigger>
-              <TabsTrigger value="arcade">Arcade</TabsTrigger>
-              <TabsTrigger value="puzzle">Puzzle</TabsTrigger>
-              <TabsTrigger value="action">Action</TabsTrigger>
-            </TabsList>
+      {/* Games Grid */}
+      <div>
+        <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <Star className="text-amber-400" size={18} /> All Games
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {GAMES.map((game, i) => {
+            const easyP = getProgress(game.id, 'Easy');
+            const medP = getProgress(game.id, 'Medium');
+            const hardP = getProgress(game.id, 'Hard');
+            const totalLevels = (easyP.level - 1) + (medP.level - 1) + (hardP.level - 1);
 
-            <TabsContent value="all" className="mt-0">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {games.map((game, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                  >
-                    <GameCard {...game} />
-                  </motion.div>
-                ))}
-              </div>
-            </TabsContent>
+            return (
+              <motion.div key={game.id}
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
+                whileHover={{ y: -6, scale: 1.02 }}
+                onClick={() => setSelectedGame(game)}
+                className="glass-card overflow-hidden cursor-pointer group"
+                style={{ border: `1px solid ${game.accentColor}22` }}>
 
-            <TabsContent value="arcade" className="mt-0">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {games.filter(g => g.category === 'Arcade').map((game, i) => (
-                  <GameCard key={i} {...game} />
-                ))}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="puzzle" className="mt-0">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {games.filter(g => g.category === 'Puzzle').map((game, i) => (
-                  <GameCard key={i} {...game} />
-                ))}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="action" className="mt-0">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {games.filter(g => g.category === 'Action').map((game, i) => (
-                  <GameCard key={i} {...game} />
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-lg flex items-center gap-2">
-                <Timer size={20} className="text-green-400" />
-                Live Matches
-              </h3>
-              <Link to="/games" className="text-sm text-blue-400 hover:underline">
-                View All
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {liveMatches.map((match, i) => (
-                <LiveMatchCard key={i} {...match} />
-              ))}
-            </div>
-          </motion.div>
-        </div>
-
-        <div className="space-y-6">
-          <ChallengeCard />
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="glass-card p-6 relative overflow-hidden"
-            style={{
-              backgroundImage: `linear-gradient(135deg, rgba(10, 14, 23, 0.95) 0%, rgba(10, 14, 23, 0.9) 100%), url(${BG_IMAGES.leaderboard})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            <div className="relative z-10">
-              <Tabs defaultValue="winners">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-lg flex items-center gap-2">
-                    <Trophy size={20} className="text-amber-400" />
-                    Leaderboards
-                  </h3>
-                  <TabsList className="bg-white/5">
-                    <TabsTrigger value="winners" className="text-xs">Winners</TabsTrigger>
-                    <TabsTrigger value="savers" className="text-xs">Savers</TabsTrigger>
-                  </TabsList>
+                {/* Card top gradient */}
+                <div className={`h-28 bg-gradient-to-br ${game.gradient} relative overflow-hidden`}>
+                  <div className="absolute inset-0 bg-black/20" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-6xl drop-shadow-lg group-hover:scale-110 transition-transform duration-300">{game.emoji}</span>
+                  </div>
+                  {/* Category badge */}
+                  <div className="absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-bold text-white"
+                    style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.2)' }}>
+                    {game.category}
+                  </div>
+                  {/* Play overlay */}
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="w-14 h-14 rounded-full flex items-center justify-center"
+                      style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.3)' }}>
+                      <Play size={24} className="text-white ml-1" />
+                    </div>
+                  </div>
                 </div>
 
-                <TabsContent value="winners" className="mt-0 space-y-2">
-                  {topWinners.map((entry, i) => (
-                    <LeaderboardEntry key={i} {...entry} />
-                  ))}
-                </TabsContent>
+                <div className="p-4">
+                  <div className="flex items-start justify-between mb-1">
+                    <h3 className="font-bold text-white group-hover:text-purple-300 transition-colors">{game.title}</h3>
+                    <div className="flex items-center gap-1 text-amber-400 text-xs">
+                      <Sparkles size={11} />+{game.reward}
+                    </div>
+                  </div>
+                  <p className="text-white/50 text-xs leading-relaxed mb-3">{game.description}</p>
 
-                <TabsContent value="savers" className="mt-0 space-y-2">
-                  {topSavers.map((entry, i) => (
-                    <LeaderboardEntry key={i} {...entry} />
-                  ))}
-                </TabsContent>
-              </Tabs>
-            </div>
-          </motion.div>
+                  {/* Difficulty progress bars */}
+                  <div className="space-y-1.5">
+                    {(['Easy', 'Medium', 'Hard'] as Difficulty[]).map(d => {
+                      const p = getProgress(game.id, d);
+                      const lvl = Math.min(p.level - 1, 100);
+                      return (
+                        <div key={d} className="flex items-center gap-2">
+                          <span className="text-xs w-12" style={{ color: DIFF_CONFIG[d].color }}>{d}</span>
+                          <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                            <div className="h-full rounded-full transition-all duration-500"
+                              style={{ width: `${lvl}%`, background: DIFF_CONFIG[d].color }} />
+                          </div>
+                          <span className="text-xs text-white/40 w-12 text-right">Lv {Math.max(p.level, 1)}/100</span>
+                        </div>
+                      );
+                    })}
+                  </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="glass-card p-6"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center shadow-lg">
-                <Target size={24} className="text-white" />
-              </div>
-              <div>
-                <h3 className="font-bold">Daily Challenge</h3>
-                <p className="text-white/50 text-sm">Win 3 games today</p>
-              </div>
-            </div>
-            <div className="mb-4">
-              <div className="flex items-center justify-between text-sm mb-2">
-                <span className="text-white/60">Progress</span>
-                <span className="font-medium">1/3</span>
-              </div>
-              <Progress value={33} className="h-2" />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1 text-amber-400">
-                <Sparkles size={14} />
-                <span className="font-medium">+200 coins</span>
-              </div>
-              <span className="text-xs text-white/40">12 hours left</span>
-            </div>
-          </motion.div>
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/5">
+                    <div className="flex items-center gap-1 text-white/40 text-xs">
+                      <Users size={11} />{game.players} playing
+                    </div>
+                    <div className="text-xs text-purple-300/70">{totalLevels}/300 cleared</div>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
+      </div>
+
+      {/* Game Selector Modal */}
+      <AnimatePresence>
+        {selectedGame && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+            onClick={e => { if (e.target === e.currentTarget) setSelectedGame(null); }}>
+            <motion.div initial={{ scale: 0.85, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.85, opacity: 0 }}
+              className="relative w-full max-w-lg rounded-2xl overflow-hidden"
+              style={{ background: 'linear-gradient(135deg,#0f0a2e 0%,#1a1035 100%)', border: `1px solid ${selectedGame.accentColor}33`, boxShadow: `0 0 60px ${selectedGame.accentColor}22` }}>
+
+              {/* Top section */}
+              <div className={`bg-gradient-to-br ${selectedGame.gradient} p-8 relative overflow-hidden`}>
+                <div className="absolute inset-0 bg-black/30" />
+                <button onClick={() => setSelectedGame(null)}
+                  className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10">
+                  <ChevronLeft size={20} />
+                </button>
+                <div className="relative z-10 flex items-center gap-4">
+                  <span className="text-7xl">{selectedGame.emoji}</span>
+                  <div>
+                    <h2 className="text-2xl font-bold text-white">{selectedGame.title}</h2>
+                    <p className="text-white/70 text-sm mt-1">{selectedGame.description}</p>
+                    <div className="flex items-center gap-3 mt-2">
+                      <span className="text-white/60 text-xs flex items-center gap-1"><Target size={11} />{selectedGame.controls}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Difficulty selector */}
+              <div className="p-6">
+                <h3 className="text-white/70 text-sm font-semibold mb-4 uppercase tracking-wider">Choose Difficulty</h3>
+                <div className="space-y-3 mb-6">
+                  {(['Easy', 'Medium', 'Hard'] as Difficulty[]).map(d => {
+                    const p = getProgress(selectedGame.id, d);
+                    const lvl = Math.max(p.level, 1);
+                    const cfg = DIFF_CONFIG[d];
+                    const isSelected = selectedDiff === d;
+                    return (
+                      <button key={d} onClick={() => setSelectedDiff(d)}
+                        className="w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200"
+                        style={{ background: isSelected ? cfg.bg : 'rgba(255,255,255,0.03)', border: `1px solid ${isSelected ? cfg.border : 'rgba(255,255,255,0.07)'}` }}>
+                        <span className="text-xl">{cfg.emoji}</span>
+                        <div className="flex-1 text-left">
+                          <div className="font-bold text-white text-sm">{cfg.label}</div>
+                          <div className="text-xs mt-0.5" style={{ color: cfg.color }}>{cfg.desc}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs font-bold" style={{ color: cfg.color }}>Level {lvl}/100</div>
+                          <div className="h-1.5 w-20 rounded-full bg-white/10 mt-1 overflow-hidden">
+                            <div className="h-full rounded-full" style={{ width: `${Math.min(lvl - 1, 99)}%`, background: cfg.color }} />
+                          </div>
+                        </div>
+                        {isSelected && (
+                          <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: cfg.color }}>
+                            <Star size={10} className="text-white" />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="flex gap-3">
+                  <button onClick={() => setSelectedGame(null)}
+                    className="flex-1 py-3 rounded-xl text-white/60 font-semibold text-sm border border-white/10 hover:border-white/20 transition-colors">
+                    Cancel
+                  </button>
+                  <button onClick={() => launchGame(selectedGame, selectedDiff)}
+                    className="flex-2 flex-grow-[2] py-3 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2"
+                    style={{
+                      background: `linear-gradient(135deg, ${selectedGame.accentColor}, ${selectedGame.accentColor}88)`,
+                      boxShadow: `0 0 20px ${selectedGame.accentColor}44`,
+                    }}>
+                    <Play size={16} />
+                    Play {selectedDiff} — Level {Math.max(getProgress(selectedGame.id, selectedDiff).level, 1)}
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Active Game Renderer */}
+      <AnimatePresence>
+        {activeGame && renderGame()}
+      </AnimatePresence>
+
+      {/* Leaderboard section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+          className="glass-card p-5">
+          <h3 className="font-bold text-lg flex items-center gap-2 mb-4">
+            <Trophy size={18} className="text-amber-400" /> Global Leaderboard
+          </h3>
+          {[
+            { rank: 1, name: 'DragonSlayer', score: 125000, badge: '🥇' },
+            { rank: 2, name: 'NeonNinja', score: 98200, badge: '🥈' },
+            { rank: 3, name: 'CosmicKing', score: 87600, badge: '🥉' },
+            { rank: 4, name: 'PixelMaster', score: 72300, badge: '4️⃣' },
+            { rank: 5, name: user?.name || 'You', score: totalScore || 65400, badge: '⭐', isUser: true },
+          ].map(entry => (
+            <div key={entry.rank}
+              className={`flex items-center gap-3 p-2.5 rounded-lg mb-1.5 ${entry.isUser ? 'border border-purple-500/30' : ''}`}
+              style={{ background: entry.isUser ? 'rgba(124,58,237,0.1)' : 'rgba(255,255,255,0.03)' }}>
+              <span className="text-lg w-7 text-center">{entry.badge}</span>
+              <span className={`flex-1 text-sm font-medium ${entry.isUser ? 'text-purple-300' : 'text-white/80'}`}>
+                {entry.name} {entry.isUser && <span className="text-xs text-purple-400">(You)</span>}
+              </span>
+              <span className="text-sm text-amber-400 font-bold">{entry.score.toLocaleString()}</span>
+            </div>
+          ))}
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+          className="glass-card p-5">
+          <h3 className="font-bold text-lg flex items-center gap-2 mb-4">
+            <Flame size={18} className="text-orange-400" /> Your Progress
+          </h3>
+          {GAMES.map(game => {
+            const total = (['Easy', 'Medium', 'Hard'] as Difficulty[]).reduce((acc, d) => acc + Math.max(getProgress(game.id, d).level - 1, 0), 0);
+            return (
+              <div key={game.id} className="flex items-center gap-3 mb-3">
+                <span className="text-xl">{game.emoji}</span>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm text-white/80">{game.title}</span>
+                    <span className="text-xs text-purple-300">{total}/300</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${(total / 300) * 100}%`, background: `linear-gradient(90deg, ${game.accentColor}, ${game.accentColor}88)` }} />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </motion.div>
       </div>
     </div>
   );
